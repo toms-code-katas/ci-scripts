@@ -1,101 +1,126 @@
 import argparse
+from dataclasses import dataclass
 import glob
 import os
+import re
 import shutil
 import subprocess
-
+from typing import Dict
 import yaml
 
 
-class GitRepositoryMetaData:
-    def __init__(self):
-        self.name: str
-        self.url: str
-        self.tag: str
+def to_string(obj):
+    return obj.__class__.__name__ + "/" + obj.name
 
 
-class HelmReleaseMetaData:
-    def __init__(self):
-        self.name: str
-        self.chart: str
-        self.repo: GitRepositoryMetaData
-        self.values: dict
+def find(element, dictionary):
+    keys = element.split('/')
+    current_dictionary = dictionary
+    for key in keys:
+        if re.search(r'[\d+]', key):
+            key = int(re.search(r'\d+', key).group())
+        elif key not in current_dictionary.keys():
+            return None
+        current_dictionary = current_dictionary[key]
+    return current_dictionary
 
 
-def get_git_repositories(source_path: str) -> dict:
-    repos = {}
-    source_files = glob.glob(f"{source_path}/*.yaml")
-    for source_file in source_files:
-        with open(source_file, 'r') as source_yaml:
-            source_document = yaml.load(source_yaml, Loader=yaml.FullLoader)
-            if source_document["kind"] == "GitRepository":
-                print(f"Found git repository {source_document['metadata']['name']}")
-                repo = GitRepositoryMetaData()
-                repo.name = source_document['metadata']['name']
-                repo.url = source_document['spec']['url']
+@dataclass
+class FluxObject:
+    name: str = None
 
-                if "tag" in source_document['spec']['ref']:
-                    repo.tag = source_document['spec']['ref']['tag']
-                elif "branch" in source_document['spec']['ref']:
-                    repo.tag = source_document['spec']['ref']['branch']
-                repos[repo.name] = repo
-    return repos
+    def __str__(self):
+        return to_string(self)
+
+    def __hash__(self):
+        return hash(self.__str__())
 
 
-def get_values(config_map_path: str) -> dict:
-    values = {}
-    config_map_files = glob.glob(f"{config_map_path}/*.yaml")
-    for config_map_file in config_map_files:
-        with open(config_map_file, 'r') as config_map_yaml:
-            config_map = yaml.load(config_map_yaml, Loader=yaml.FullLoader)
-            if config_map["kind"] == "ConfigMap":
-                print(f"Found config map {config_map['metadata']['name']}")
-
-            if "values.yaml" not in config_map["data"]:
-                print(f"config map {config_map['metadata']['name']} does not contain 'values.yaml' node")
-                continue
-            values[config_map['metadata']['name']] = config_map["data"]["values.yaml"]
-    return values
+@dataclass
+class GitRepository(FluxObject):
+    url: str = None
+    tag: str = None
 
 
-def get_helm_releases(helm_release_path: str, repos: dict, values: dict):
-    helm_release_files = glob.glob(f"{helm_release_path}/*.yaml")
-    helm_releases = []
-    for helm_release_file in helm_release_files:
-        with open(helm_release_file, 'r') as chart_yaml:
-            yaml_documents = yaml.load_all(chart_yaml, Loader=yaml.FullLoader)
-            for yaml_document in yaml_documents:
-                if yaml_document["kind"] == "HelmRelease":
-                    print(f"Found helm release {yaml_document['metadata']['name']}")
-                else:
-                    continue
-                helm_release_name = yaml_document['metadata']['name']
-                helm_chart = yaml_document['spec']['chart']['spec']['chart']
+@dataclass
+class HelmConfigValues(FluxObject):
+    values: str = None
 
-                source_ref = yaml_document["spec"]["chart"]["spec"]["sourceRef"]
-                if not source_ref["kind"] == "GitRepository":
-                    print(
-                        f"source reference of helm release {helm_release_name}, {source_ref} is not of kind GitRepository")
-                    exit(1)
-                repo = repos[source_ref["name"]]
-                if not repo:
-                    print(f"No repository found with name {source_ref['name']}")
-                    exit(1)
 
-                # TODO: Check type and size
-                config_map_name = yaml_document["spec"]["valuesFrom"][0]["name"]
-                chart_values = values[config_map_name]
-                if not chart_values:
-                    print(f"No values found with name {config_map_name}")
-                    exit(1)
+@dataclass
+class HelmRelease(FluxObject):
+    chart: str = None
+    repo: GitRepository = None
+    repo_name: str = None
+    values: HelmConfigValues = None
+    values_config_map_name: str = None
 
-                helm_release = HelmReleaseMetaData()
-                helm_release.name = helm_release_name
-                helm_release.chart = helm_chart
-                helm_release.repo = repo
-                helm_release.values = chart_values
-                helm_releases.append(helm_release)
-    return helm_releases
+
+def build_git_repository(yaml_block) -> GitRepository:
+    repo = GitRepository(name=find("metadata/name", yaml_block), url=find("spec/url", yaml_block))
+    repo.tag = get_git_repository_tag(yaml_block)
+    return repo
+
+
+def get_git_repository_tag(yaml_block) -> str:
+    ref = find("spec/ref", yaml_block)
+    if "tag" in ref:
+        return ref['tag']
+    return ref['branch']
+
+
+def build_helm_release(yaml_block) -> HelmRelease:
+    return HelmRelease(name=find("metadata/name", yaml_block), chart=find("spec/chart/spec/chart", yaml_block),
+                       repo_name=find("spec/chart/spec/sourceRef/name", yaml_block),
+                       values_config_map_name=find("spec/valuesFrom/[0]/name", yaml_block))
+
+
+def build_helm_values(yaml_block) -> HelmConfigValues | None:
+    if "values.yaml" not in yaml_block["data"]:
+        return None
+    return HelmConfigValues(find("metadata/name", yaml_block), find("data/values.yaml", yaml_block))
+
+
+Kind2Builder = {"GitRepository": build_git_repository, "HelmRelease": build_helm_release,
+                "ConfigMap": build_helm_values}
+
+
+def create_flux_objects_from_files(glob_pattern) -> Dict[str, object]:
+    created_objects = {}
+    files = glob.glob(glob_pattern)
+    for file in files:
+        with open(file, 'r') as file_stream:
+            yaml_docs = yaml.load_all(file_stream, Loader=yaml.FullLoader)
+            create_flux_objects_from_yaml_doc(created_objects, yaml_docs)
+    return created_objects
+
+
+def create_flux_objects_from_yaml_doc(created_objects, yaml_docs):
+    for yaml_doc in yaml_docs:
+        kind = find("kind", yaml_doc)
+        if not kind:
+            print(f"Could not determine kind from {yaml_doc!s:200.200}...")
+        elif kind not in Kind2Builder.keys():
+            print(f"Could not find builder for kind {kind} in {yaml_doc!s:200.200}...")
+        else:
+            create_flux_object_from_yaml_doc(created_objects, kind, yaml_doc)
+
+
+def create_flux_object_from_yaml_doc(created_objects, kind, yaml_doc):
+    builder = Kind2Builder[kind]
+    flux_object = builder(yaml_doc)
+    if not flux_object:
+        print(f"Could not build flux object from {yaml_doc!s:200.200}...")
+    else:
+        created_objects[str(flux_object)] = flux_object
+
+
+def compose_helm_releases(flux_objects):
+    for release in {name: flux_object for name, flux_object in flux_objects.items() if
+                    isinstance(flux_object, HelmRelease)}.values():  # type: HelmRelease
+        release.repo = flux_objects[GitRepository.__name__ + "/" + release.repo_name]
+        release.values = flux_objects[HelmConfigValues.__name__ + "/" + release.values_config_map_name]
+        yield release
 
 
 def parse_args():
@@ -104,49 +129,47 @@ def parse_args():
                         help='Path to folder containing the flux manifests')
     parser.add_argument('--work-dir', '-w', nargs='?', dest="work_dir", required=True, help='Path to working directory')
 
-    args = parser.parse_args()
-    return args
+    arguments = parser.parse_args()
+    return arguments
+
+
+def recreate_working_dir():
+    try:
+        shutil.rmtree(working_dir)
+    except FileNotFoundError:
+        pass
+    os.mkdir(working_dir)
 
 
 if __name__ == '__main__':
     args = parse_args()
 
     base_path = args.base_path
-    work_dir = args.work_dir
-    source_path = f"{base_path}/sources"
-    helm_release_path = f"{base_path}/helmreleases"
-    config_maps_path = f"{base_path}/configmaps"
+    working_dir = args.work_dir
+    path_to_git_repos = f"{base_path}/sources"
+    path_to_helm_releases = f"{base_path}/helmreleases"
+    path_to_config_maps = f"{base_path}/configmaps"
+    output_dir = working_dir + "/generated"
 
-    repos = get_git_repositories(source_path)
-    values = get_values(config_maps_path)
+    all_flux_objects = create_flux_objects_from_files(f"{base_path}/**/*.yaml")
 
-    try:
-        shutil.rmtree(work_dir)
-    except FileNotFoundError:
-        pass
-    os.mkdir(work_dir)
+    recreate_working_dir()
+    os.mkdir(output_dir)
 
-    helm_releases = get_helm_releases(helm_release_path, repos, values)
+    for helm_release in compose_helm_releases(all_flux_objects):
+        git_clone_target_folder = f"{working_dir}/{helm_release.repo.name}"
+        subprocess.run(['git', 'clone', '--depth', '1', '--branch', helm_release.repo.tag, helm_release.repo.url,
+                        git_clone_target_folder], check=True)
 
-    if not helm_releases:
-        print(f"No helm releases found in {helm_release_path}")
-        exit(1)
+        release_value_file_name = f'{working_dir}/{helm_release.name}-values.yaml'
+        with open(release_value_file_name, 'w') as value_file:
+            value_file.write(helm_release.values.values)
 
-    helm_output_dir = work_dir + "/generated"
-    os.mkdir(helm_output_dir)
-    for helm_release in helm_releases:
-        repo_dir = f"{work_dir}/{helm_release.repo.name}"
-        subprocess.run(
-            ['git', 'clone', '--depth', '1', '--branch', helm_release.repo.tag, helm_release.repo.url, repo_dir])
+        path_to_chart = git_clone_target_folder + "/" + helm_release.chart
+        generated_manifests_file = output_dir + "/" + helm_release.name + ".yaml"
+        with open(generated_manifests_file, "w") as helm_output:
+            subprocess.run(['helm', '-f', release_value_file_name, 'template', '--debug', path_to_chart],
+                           stdout=helm_output, check=True)
 
-        value_file_name = f'{work_dir}/{helm_release.name}-values.yaml'
-        with open(value_file_name, 'w') as value_file:
-            value_file.write(helm_release.values)
-
-        chart_dir = repo_dir + "/" + helm_release.chart
-        chart_target = helm_output_dir + "/" + helm_release.name + ".yaml"
-        with open(chart_target, "w") as helm_output:
-            subprocess.run(['helm', '-f', value_file_name, 'template', '--debug', chart_dir], stdout=helm_output)
-
-        assert os.path.exists(chart_target)
-        assert os.path.getsize(chart_target) > 100
+        assert os.path.exists(generated_manifests_file)
+        assert os.path.getsize(generated_manifests_file) > 100
