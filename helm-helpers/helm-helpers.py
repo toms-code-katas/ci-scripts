@@ -14,9 +14,8 @@ def to_string(obj):
 
 
 def find(element, dictionary):
-    keys = element.split('/')
     current_dictionary = dictionary
-    for key in keys:
+    for key in element.split('/'):
         if re.search(r'[\d+]', key):
             key = int(re.search(r'\d+', key).group())
         elif key not in current_dictionary.keys():
@@ -63,8 +62,7 @@ def build_git_repository(yaml_block) -> GitRepository:
 
 
 def get_git_repository_tag(yaml_block) -> str:
-    ref = find("spec/ref", yaml_block)
-    if "tag" in ref:
+    if "tag" in (ref := find("spec/ref", yaml_block)):
         return ref['tag']
     return ref['branch']
 
@@ -87,8 +85,7 @@ Kind2Builder = {"GitRepository": build_git_repository, "HelmRelease": build_helm
 
 def create_flux_objects_from_files(glob_pattern) -> Dict[str, object]:
     created_objects = {}
-    files = glob.glob(glob_pattern)
-    for file in files:
+    for file in glob.glob(glob_pattern):
         with open(file, 'r') as file_stream:
             yaml_docs = yaml.load_all(file_stream, Loader=yaml.FullLoader)
             create_flux_objects_from_yaml_doc(created_objects, yaml_docs)
@@ -97,8 +94,7 @@ def create_flux_objects_from_files(glob_pattern) -> Dict[str, object]:
 
 def create_flux_objects_from_yaml_doc(created_objects, yaml_docs):
     for yaml_doc in yaml_docs:
-        kind = find("kind", yaml_doc)
-        if not kind:
+        if not (kind := find("kind", yaml_doc)):
             print(f"Could not determine kind from {yaml_doc!s:200.200}...")
         elif kind not in Kind2Builder.keys():
             print(f"Could not find builder for kind {kind} in {yaml_doc!s:200.200}...")
@@ -108,8 +104,7 @@ def create_flux_objects_from_yaml_doc(created_objects, yaml_docs):
 
 def create_flux_object_from_yaml_doc(created_objects, kind, yaml_doc):
     builder = Kind2Builder[kind]
-    flux_object = builder(yaml_doc)
-    if not flux_object:
+    if not (flux_object := builder(yaml_doc)):
         print(f"Could not build flux object from {yaml_doc!s:200.200}...")
     else:
         created_objects[str(flux_object)] = flux_object
@@ -133,40 +128,37 @@ def parse_args():
     return arguments
 
 
-def recreate_working_dir():
+def recreate_folder(folder):
     try:
-        shutil.rmtree(working_dir)
+        shutil.rmtree(folder)
     except FileNotFoundError:
         pass
-    os.mkdir(working_dir)
+    os.mkdir(folder)
 
 
 if __name__ == '__main__':
     args = parse_args()
 
     base_path = args.base_path
-    working_dir = args.work_dir
-    path_to_git_repos = f"{base_path}/sources"
-    path_to_helm_releases = f"{base_path}/helmreleases"
-    path_to_config_maps = f"{base_path}/configmaps"
-    output_dir = working_dir + "/generated"
+    working_folder = args.work_dir
+    output_folder = working_folder + "/generated"
 
     all_flux_objects = create_flux_objects_from_files(f"{base_path}/**/*.yaml")
 
-    recreate_working_dir()
-    os.mkdir(output_dir)
+    recreate_folder(working_folder)
+    os.mkdir(output_folder)
 
     for helm_release in compose_helm_releases(all_flux_objects):
-        git_clone_target_folder = f"{working_dir}/{helm_release.repo.name}"
+        git_clone_target_folder = f"{working_folder}/{helm_release.repo.name}"
         subprocess.run(['git', 'clone', '--depth', '1', '--branch', helm_release.repo.tag, helm_release.repo.url,
                         git_clone_target_folder], check=True)
 
-        release_value_file_name = f'{working_dir}/{helm_release.name}-values.yaml'
+        release_value_file_name = f'{working_folder}/{helm_release.name}-values.yaml'
         with open(release_value_file_name, 'w') as value_file:
             value_file.write(helm_release.values.values)
 
         path_to_chart = git_clone_target_folder + "/" + helm_release.chart
-        generated_manifests_file = output_dir + "/" + helm_release.name + ".yaml"
+        generated_manifests_file = output_folder + "/" + helm_release.name + ".yaml"
         with open(generated_manifests_file, "w") as helm_output:
             subprocess.run(['helm', '-f', release_value_file_name, 'template', '--debug', path_to_chart],
                            stdout=helm_output, check=True)
