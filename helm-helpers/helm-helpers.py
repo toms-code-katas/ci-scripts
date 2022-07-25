@@ -68,9 +68,12 @@ def get_git_repository_tag(yaml_block) -> str:
 
 
 def build_helm_release(yaml_block) -> HelmRelease:
-    return HelmRelease(name=find("metadata/name", yaml_block), chart=find("spec/chart/spec/chart", yaml_block),
-                       repo_name=find("spec/chart/spec/sourceRef/name", yaml_block),
-                       values_config_map_name=find("spec/valuesFrom/[0]/name", yaml_block))
+    hr = HelmRelease(name=find("metadata/name", yaml_block), chart=find("spec/chart/spec/chart", yaml_block),
+                     repo_name=find("spec/chart/spec/sourceRef/name", yaml_block),
+                     values_config_map_name=find("spec/valuesFrom/[0]/name", yaml_block))
+    if "values" in yaml_block["spec"]:
+        hr.values = HelmConfigValues(find("metadata/name", yaml_block), yaml.dump(find("spec/values", yaml_block)))
+    return hr
 
 
 def build_helm_values(yaml_block) -> HelmConfigValues | None:
@@ -114,7 +117,8 @@ def compose_helm_releases(flux_objects):
     for release in {name: flux_object for name, flux_object in flux_objects.items() if
                     isinstance(flux_object, HelmRelease)}.values():  # type: HelmRelease
         release.repo = flux_objects[GitRepository.__name__ + "/" + release.repo_name]
-        release.values = flux_objects[HelmConfigValues.__name__ + "/" + release.values_config_map_name]
+        if not release.values:
+            release.values = flux_objects[HelmConfigValues.__name__ + "/" + release.values_config_map_name]
         yield release
 
 
