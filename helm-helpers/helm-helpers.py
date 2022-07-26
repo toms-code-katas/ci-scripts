@@ -88,7 +88,7 @@ Kind2Builder = {"GitRepository": build_git_repository, "HelmRelease": build_helm
 
 def create_flux_objects_from_files(glob_pattern) -> Dict[str, object]:
     created_objects = {}
-    for file in glob.glob(glob_pattern):
+    for file in glob.glob(glob_pattern, recursive=True):
         with open(file, 'r') as file_stream:
             yaml_docs = yaml.load_all(file_stream, Loader=yaml.FullLoader)
             create_flux_objects_from_yaml_doc(created_objects, yaml_docs)
