@@ -7,12 +7,15 @@ from watchdog.events import LoggingEventHandler
 
 LOGGER = logging.getLogger("watchdog")
 
+OBSERVER = None
+
 
 def add_signal_handler():
     def signal_term_handler(sig, frame):
-        if observer:
-            observer.stop()
-            observer.join()
+        if OBSERVER:
+            LOGGER.info("Stopping watchdog")
+            OBSERVER.stop()
+            OBSERVER.join()
         sys.exit(0)
 
     signal.signal(signal.SIGINT, signal_term_handler)
@@ -25,12 +28,12 @@ if __name__ == "__main__":
                         format='%(asctime)s - %(message)s',
                         datefmt='%Y-%m-%d %H:%M:%S')
     path = sys.argv[1] if len(sys.argv) > 1 else '.'
-    observer = Observer()
-    observer.schedule(LoggingEventHandler(),  path='/tmp/secrets',  recursive=False)
+    OBSERVER = Observer()
+    OBSERVER.schedule(LoggingEventHandler(),  path=path,  recursive=False)
 
     add_signal_handler()
 
-    observer.start()
+    OBSERVER.start()
 
     try:
         while True:
