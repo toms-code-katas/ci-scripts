@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: file-watchdog
+spec:
+  containers:
+  - name: file-watchdog
+    image: ghcr.io/toms-code-katas/folder-watchdog:1.0.0
+    args: ["/tmp/secrets"]
+    env:
+      - name: TEST_SECRET
+        valueFrom:
+          secretKeyRef:
+            name: file-watchdog-secret
+            key: TEST_SECRET
+            optional: false
+    volumeMounts:
+    - name: secrets
+      mountPath: "/tmp/secrets"
+      readOnly: true
+  volumes:
+  - name: secrets
+    secret:
+      secretName: file-watchdog-secret
+      optional: false
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: file-watchdog-secret
+type: Opaque
+data:
+  TEST_SECRET: bXlzdXBlcnNlY3JldAo=
