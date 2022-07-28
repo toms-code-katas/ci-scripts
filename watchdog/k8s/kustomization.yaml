@@ -1,0 +1,10 @@
+resources:
+  - deployment.yaml
+
+secretGenerator:
+- name: file-watchdog-kustomization-secret
+  literals:
+  - TEST_KUST_SECRET=12345678901
+
+configurations:
+- kustomizeconfig.yaml

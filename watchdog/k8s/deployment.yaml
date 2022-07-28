@@ -1,28 +1,54 @@
-apiVersion: v1
-kind: Pod
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: file-watchdog
+  labels:
+    app: file-watchdog
 spec:
-  containers:
-  - name: file-watchdog
-    image: ghcr.io/toms-code-katas/folder-watchdog:1.0.0
-    args: ["/tmp/secrets"]
-    env:
-      - name: TEST_SECRET
-        valueFrom:
-          secretKeyRef:
-            name: file-watchdog-secret
-            key: TEST_SECRET
-            optional: false
-    volumeMounts:
-    - name: secrets
-      mountPath: "/tmp/secrets"
-      readOnly: true
-  volumes:
-  - name: secrets
-    secret:
-      secretName: file-watchdog-secret
-      optional: false
+  replicas: 3
+  selector:
+    matchLabels:
+      app: file-watchdog
+  template:
+    metadata:
+      labels:
+        app: file-watchdog
+    spec:
+      containers:
+      - name: file-watchdog
+        image: ghcr.io/toms-code-katas/folder-watchdog:1.0.1
+        args: ["/tmp/secrets"]
+        env:
+          - name: CONFIG_MAP_NAME
+            value: file-watchdog-kustomization-secret
+          - name: TEST_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: file-watchdog-secret
+                key: TEST_SECRET
+                optional: false
+          - name: TEST_KUST_SECRET
+            valueFrom:
+              secretKeyRef:
+                name: file-watchdog-kustomization-secret
+                key: TEST_KUST_SECRET
+                optional: false
+        volumeMounts:
+        - name: secrets
+          mountPath: "/tmp/secrets"
+          readOnly: true
+        - name: kustomization-secrets
+          mountPath: "/tmp/kustomization-secrets"
+          readOnly: true
+      volumes:
+      - name: secrets
+        secret:
+          secretName: file-watchdog-secret
+          optional: false
+      - name: kustomization-secrets
+        secret:
+          secretName: file-watchdog-kustomization-secret
+          optional: false
 ---
 apiVersion: v1
 kind: Secret

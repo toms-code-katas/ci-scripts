@@ -1,0 +1,6 @@
+nameReference:
+- kind: Secret
+  fieldSpecs:
+  - path: spec/template/spec/containers/env/value
+    kind: Deployment
+    create: true

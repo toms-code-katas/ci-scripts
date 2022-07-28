@@ -29,7 +29,7 @@ if __name__ == "__main__":
                         datefmt='%Y-%m-%d %H:%M:%S')
     path = sys.argv[1] if len(sys.argv) > 1 else '.'
     OBSERVER = Observer()
-    OBSERVER.schedule(LoggingEventHandler(),  path=path,  recursive=False)
+    OBSERVER.schedule(LoggingEventHandler(),  path=path,  recursive=True)
 
     add_signal_handler()
 
