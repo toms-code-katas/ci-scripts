@@ -122,6 +122,29 @@ def compose_helm_releases(flux_objects):
         yield release
 
 
+def get_chart_dependency_repos(path_to_chart: str):
+    helm_chart = None
+    with open(f'{path_to_chart}/Chart.yaml', 'r') as chart_file:
+        helm_chart = yaml.load(chart_file, Loader=yaml.FullLoader)
+    dependencies = find("dependencies", helm_chart)
+    if dependencies:
+        for dependency in dependencies:
+            if "repository" in dependency:
+                yield dependency["name"], dependency["repository"]
+
+
+def add_chart_repositories(repo_list) -> bool:
+    at_least_one_repo = False
+    for repo in repo_list:
+        subprocess.run(['helm', 'repo', 'add', repo[0], repo[1]], check=True)
+        at_least_one_repo = True
+    return at_least_one_repo
+
+
+def build_chart_dependencies(path_to_chart):
+    subprocess.run(['helm', 'dependency', 'build', path_to_chart], check=True)
+
+
 def parse_args():
     parser = argparse.ArgumentParser(description='Render k8s manifests from flux helm releases')
     parser.add_argument('--base-dir', '-b', nargs='?', dest="base_path", required=True,
@@ -162,6 +185,10 @@ if __name__ == '__main__':
             value_file.write(helm_release.values.values)
 
         path_to_chart = git_clone_target_folder + "/" + helm_release.chart
+
+        if add_chart_repositories(get_chart_dependency_repos(path_to_chart)):
+            build_chart_dependencies(path_to_chart)
+
         generated_manifests_file = output_folder + "/" + helm_release.name + ".yaml"
         with open(generated_manifests_file, "w") as helm_output:
             subprocess.run(['helm', '-f', release_value_file_name, 'template', '--debug', path_to_chart],
