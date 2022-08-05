@@ -33,11 +33,15 @@ if __name__ == '__main__':
         passed_checks_for_manifest[manifest] = 0
 
     for passed_check in report["results"]["passed_checks"]:
-        if passed_check["file_abs_path"] in passed_checks_for_manifest.keys():
-            passed_checks_for_manifest[manifest] = passed_checks_for_manifest[manifest] + 1
+        file_abs_path = passed_check["file_abs_path"]
+        if file_abs_path in passed_checks_for_manifest.keys():
+            passed_checks_for_manifest[file_abs_path] = passed_checks_for_manifest[file_abs_path] + 1
+        else:
+            print(f"\033[91m\U00002716 file {file_abs_path} in report was not part of generated manifests")
+            error = True
 
     for file in passed_checks_for_manifest:
-        passed_checks = passed_checks_for_manifest[file_path]
+        passed_checks = passed_checks_for_manifest[file]
         if passed_checks == 0:
             print(f"\033[91m\U00002716 file {file} did not pass any checks")
             error = True
