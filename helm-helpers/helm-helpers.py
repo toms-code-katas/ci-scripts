@@ -1,5 +1,6 @@
 import argparse
 from dataclasses import dataclass
+import json
 import glob
 import os
 import re
@@ -7,6 +8,10 @@ import shutil
 import subprocess
 from typing import Dict
 import yaml
+
+
+REPO_URL_MAPPING = {}
+
 
 def to_string(obj):
     return obj.__class__.__name__ + "/" + obj.name
@@ -71,13 +76,20 @@ def build_git_repository(yaml_block) -> GitRepository:
 
 
 def get_substitute_url(helm_repo_name: str) -> str:
-    name_2_url = {"bitnami": "https://charts.bitnami.com/bitnami"}
-    return name_2_url[helm_repo_name]
+    global REPO_URL_MAPPING
+    if not REPO_URL_MAPPING:
+        with open(f"{os.path.dirname(__file__)}/helm_repo_url_mapping.json") as json_file:
+            REPO_URL_MAPPING = json.load(json_file)
+    return REPO_URL_MAPPING[helm_repo_name]
 
 
 def build_helm_repository(yaml_block) -> GitRepository:
     name: str = find("metadata/name", yaml_block)
-    repo = HelmRepository(name=name, url=get_substitute_url(name))
+    url: str = find("spec/url", yaml_block)
+    substitute_url = get_substitute_url(name)
+    if substitute_url:
+        url = substitute_url
+    repo = HelmRepository(name=name, url=url)
     return repo
 
 
