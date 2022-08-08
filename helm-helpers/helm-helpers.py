@@ -8,7 +8,6 @@ import subprocess
 from typing import Dict
 import yaml
 
-
 def to_string(obj):
     return obj.__class__.__name__ + "/" + obj.name
 
@@ -36,9 +35,19 @@ class FluxObject:
 
 
 @dataclass
-class GitRepository(FluxObject):
+class Repository(FluxObject):
+    name: str = None
     url: str = None
+
+
+@dataclass
+class GitRepository(Repository):
     tag: str = None
+
+
+@dataclass
+class HelmRepository(Repository):
+    pass
 
 
 @dataclass
@@ -58,6 +67,17 @@ class HelmRelease(FluxObject):
 def build_git_repository(yaml_block) -> GitRepository:
     repo = GitRepository(name=find("metadata/name", yaml_block), url=find("spec/url", yaml_block))
     repo.tag = get_git_repository_tag(yaml_block)
+    return repo
+
+
+def get_substitute_url(helm_repo_name: str) -> str:
+    name_2_url = {"bitnami": "https://charts.bitnami.com/bitnami"}
+    return name_2_url[helm_repo_name]
+
+
+def build_helm_repository(yaml_block) -> GitRepository:
+    name: str = find("metadata/name", yaml_block)
+    repo = HelmRepository(name=name, url=get_substitute_url(name))
     return repo
 
 
@@ -82,8 +102,8 @@ def build_helm_values(yaml_block) -> HelmConfigValues | None:
     return HelmConfigValues(find("metadata/name", yaml_block), find("data/values.yaml", yaml_block))
 
 
-Kind2Builder = {"GitRepository": build_git_repository, "HelmRelease": build_helm_release,
-                "ConfigMap": build_helm_values}
+Kind2Builder = {"GitRepository": build_git_repository, "HelmRepository": build_helm_repository,
+                "HelmRelease": build_helm_release, "ConfigMap": build_helm_values}
 
 
 def create_flux_objects_from_files(glob_pattern) -> Dict[str, object]:
@@ -116,7 +136,18 @@ def create_flux_object_from_yaml_doc(created_objects, kind, yaml_doc):
 def compose_helm_releases(flux_objects):
     for release in {name: flux_object for name, flux_object in flux_objects.items() if
                     isinstance(flux_object, HelmRelease)}.values():  # type: HelmRelease
-        release.repo = flux_objects[GitRepository.__name__ + "/" + release.repo_name]
+        try:
+            release.repo = flux_objects[GitRepository.__name__ + "/" + release.repo_name]
+        except KeyError:
+            pass
+
+        try:
+            release.repo = flux_objects[HelmRepository.__name__ + "/" + release.repo_name]
+        except KeyError:
+            pass
+
+        assert release.repo, f"Could not find repository with name {release.repo_name}"
+
         if not release.values:
             release.values = flux_objects[HelmConfigValues.__name__ + "/" + release.values_config_map_name]
         yield release
@@ -176,15 +207,19 @@ if __name__ == '__main__':
     os.mkdir(output_folder)
 
     for helm_release in compose_helm_releases(all_flux_objects):
-        git_clone_target_folder = f"{working_folder}/{helm_release.repo.name}"
-        subprocess.run(['git', 'clone', '--depth', '1', '--branch', helm_release.repo.tag, helm_release.repo.url,
-                        git_clone_target_folder], check=True)
+        target_folder = f"{working_folder}/{helm_release.repo.name}"
+        if type(helm_release.repo) is GitRepository:
+            subprocess.run(['git', 'clone', '--depth', '1', '--branch', helm_release.repo.tag, helm_release.repo.url,
+                        target_folder], check=True)
+        else:
+            add_chart_repositories([(helm_release.repo.name, helm_release.repo.url)])
+            subprocess.run(['helm', 'pull', '--untar', '--untardir', target_folder, f"{helm_release.repo.name}/{helm_release.chart}"], check=True)
 
         release_value_file_name = f'{working_folder}/{helm_release.name}-values.yaml'
         with open(release_value_file_name, 'w') as value_file:
             value_file.write(helm_release.values.values)
 
-        path_to_chart = git_clone_target_folder + "/" + helm_release.chart
+        path_to_chart = target_folder + "/" + helm_release.chart
 
         if add_chart_repositories(get_chart_dependency_repos(path_to_chart)):
             build_chart_dependencies(path_to_chart)
