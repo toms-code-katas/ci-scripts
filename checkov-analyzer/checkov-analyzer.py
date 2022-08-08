@@ -5,6 +5,7 @@ import sys
 
 
 if __name__ == '__main__':
+
     with open(sys.argv[1], 'r') as report_file:
         report = json.load(report_file)
 
@@ -12,15 +13,27 @@ if __name__ == '__main__':
         print(f"\033[91m\U00002716 report does not contain any passed checks\033[0m")
         sys.exit(1)
 
+    error = False
     if report["summary"]["failed"] != 0:
-        print(f"\033[91m\U00002716 report contains failed checks\033[0m")
-        sys.exit(1)
+        print(f"\033[93m\U000026A0 report contains failed checks, checking excemptions\033[0m")
+        configured_excemptions = {}
+        if os.path.exists(f"{os.path.dirname(__file__)}/excemptions.json"):
+            with open(f"{os.path.dirname(__file__)}/excemptions.json") as excemptions_file:
+                configured_excemptions = json.load(excemptions_file)
+        for failed_check in report["results"]["failed_checks"]:
+            file_path = failed_check["file_path"][1:]
+            check_id = failed_check["check_id"]
+            if file_path not in configured_excemptions.keys():
+                print(f"\033[91m\U00002716 no excemptions configured for file {file_path}\033[0m")
+                error = True
+            if check_id not in configured_excemptions[file_path]:
+                print(f"\033[91m\U00002716 check {check_id} is not an excemption for file {file_path}\033[0m")
+                error = True
 
     if report["summary"]["resource_count"] == 0:
-        print(f"\033[91m\U00002716 No resources where checked\033[0m")
+        print(f"\033[91m\U00002716 no resources where checked\033[0m")
         sys.exit(1)
 
-    error = False
     manifest_dir = sys.argv[2]
     manifests = []
 
