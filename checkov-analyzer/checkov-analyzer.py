@@ -41,12 +41,18 @@ if __name__ == '__main__':
         file_path = f"{manifest_dir}/{file}"
         file_size = os.path.getsize(file_path)
 
+        print(f"checking file {file_path}")
+
         if os.path.getsize(file_path) <= 0:
             print(f"\033[91m\U00002716 file {file_path} either does not exist or is empty\033[0m")
             error = True
         else:
             print(f"\033[92m\U00002714 file {file_path} exits with size {file_size}b\033[0m")
             manifests.append(file_path)
+
+    if not manifests:
+        print(f"\033[91m\U00002716 no manifests found in folder {manifest_dir}\033[0m")
+        sys.exit(1)
 
     passed_checks_for_manifest = {}
     for manifest in manifests:
