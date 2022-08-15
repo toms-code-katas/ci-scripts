@@ -45,7 +45,7 @@ def upload_chart(helm_package_file_name):
 
 if __name__ == '__main__':
 
-    chart_path = f'{os.getenv("CI_PROJECT_PATH")}/{sys.argv[1]}'
+    chart_path = f'{os.getenv("CI_PROJECT_DIR")}/{sys.argv[1]}'
     os.chdir(chart_path)
 
     with open(f'Chart.lock', 'r') as chart_file:
