@@ -80,7 +80,10 @@ def get_substitute_url(helm_repo_name: str) -> str:
     if not REPO_URL_MAPPING:
         with open(f"{os.path.dirname(__file__)}/helm_repo_url_mapping.json") as json_file:
             REPO_URL_MAPPING = json.load(json_file)
-    return REPO_URL_MAPPING[helm_repo_name]
+    try:
+        return REPO_URL_MAPPING[helm_repo_name]
+    except KeyError:
+        pass
 
 
 def build_helm_repository(yaml_block) -> GitRepository:
