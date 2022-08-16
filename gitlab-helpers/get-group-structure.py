@@ -20,6 +20,3 @@ if __name__ == '__main__':
             for job in project.jobs.list(get_all=True):
                 print(job.name)
                 print(job.trace().decode("utf-8"))
-        group = None
-
-
