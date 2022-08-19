@@ -1,10 +1,16 @@
+import json
+
 import gitlab
 import os
 import time
 
+from pymongo import MongoClient
+
 gl: gitlab.Gitlab
-trace_size_limit = 1000
+db = None
+trace_size_limit = 10000
 repository_size_limit = 1048576
+output = None
 
 
 def get_gitlab_group(group_id):
@@ -51,13 +57,20 @@ def export_repository(project):
 
 def get_jobs_traces(project):
     global trace_size_limit
+    global output
     for job in project.jobs.list(get_all=True):
         if trace_exists_and_does_not_exceed_size_limit(job, trace_size_limit):
-            print(job.trace().decode("utf-8"))
+            job_as_json = json.loads(job.to_json())
+            job_as_json["trace"] = job.trace().decode("utf-8")
+            output(job_as_json, "jobs")
         else:
             print("trace exceeds size limit")
 
 
 if __name__ == '__main__':
+    mongo_client = MongoClient('mongodb://localhost:27017/')
+    db = mongo_client['gitlab']
+    # output = lambda obj_as_json, type: db[type].insert_one(obj_as_json)
+    output = lambda obj_as_json, type: print(json.dumps(obj_as_json, indent=2))     # noqa
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
-    traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), functions=[get_jobs_traces, export_repository])
+    traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), functions=[get_jobs_traces])
