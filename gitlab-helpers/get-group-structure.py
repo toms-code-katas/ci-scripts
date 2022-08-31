@@ -2,6 +2,7 @@ import json
 
 import gitlab
 import os
+import tempfile
 import time
 
 from pymongo import MongoClient
@@ -51,7 +52,9 @@ def export_repository(project):
         print(f"Export of project {project.id} not yet finished")
         export.refresh()
 
-    with open(f'/tmp/{project.id}.tgz', 'wb') as f:
+    tmp = tempfile.mkdtemp(prefix=f"{project.id}-")
+
+    with open(f'{tmp}/{project.id}.tgz', 'wb') as f:
         export.download(streamed=True, action=f.write)
 
 
@@ -68,9 +71,10 @@ def get_jobs_traces(project):
 
 
 if __name__ == '__main__':
+
     mongo_client = MongoClient('mongodb://localhost:27017/')
     db = mongo_client['gitlab']
     # output = lambda obj_as_json, type: db[type].insert_one(obj_as_json)
     output = lambda obj_as_json, type: print(json.dumps(obj_as_json, indent=2))     # noqa
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
-    traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), functions=[get_jobs_traces])
+    traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), functions=[export_repository])
