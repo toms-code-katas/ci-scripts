@@ -37,18 +37,25 @@ class ExportRepository:
             export.download(streamed=True, action=f.write)
 
 
+# Visitor pattern
+# https://refactoring.guru/design-patterns/visitor
 class GetJobsAndTraces:
 
-    def __init__(self, since, trace_size_limit, outputs):
-        self.since = since
+    def __init__(self, latest_job_per_project: {}, trace_size_limit: int, outputs):
+        self.latest_job_per_project = latest_job_per_project
         self.trace_size_limit = trace_size_limit
         self.outputs = outputs
 
     def process(self, project):
-        for pipeline in project.pipelines.list(updated_after=self.since, get_all=True):
+        updated_after = None
+        if project.id in self.latest_job_per_project:
+            updated_after = self.latest_job_per_project[project.id]
+
+        for pipeline in project.pipelines.list(updated_after=updated_after, get_all=True):
             for pipeline_job in pipeline.jobs.list(get_all=True):
-                job = project.jobs.get(pipeline_job.id)
-                self.output_job_and_trace(job)
+                if get_time(pipeline_job.created_at) > updated_after:
+                    job = project.jobs.get(pipeline_job.id)
+                    self.output_job_and_trace(job)
 
     def output_job_and_trace(self, job):
         if self.trace_exists_and_does_not_exceed_size_limit(job):
@@ -86,24 +93,37 @@ def traverse_all_projects_in_group(group_id: str, processors):
         traverse_all_projects_in_group(sub_group.id, processors)
 
 
-def calculate_start_time():
-    date_of_latest_pipeline = db["jobs"].find({"pipeline.project_id": 38561683}, {"pipeline.updated_at": 1}).sort(
-        "pipeline.updated_at", -1).limit(1).next()
-    # .replace("Z", "+00:00") => Replace Z if present since python can't handle zulu time
-    date_of_latest_pipeline = date_of_latest_pipeline["pipeline"]["updated_at"].replace("Z", "+00:00")
-    return datetime.datetime.fromisoformat(date_of_latest_pipeline) + datetime.timedelta(seconds=1)
+def get_time(latest, offset: int=0):
+    latest = latest.replace("Z", "+00:00")
+    return datetime.datetime.fromisoformat(latest) + datetime.timedelta(seconds=offset)
+
+
+def get_latest_job_date_per_project():
+    # db.jobs.aggregate([ { $group: { _id: "$pipeline.project_id", latests: { $max: "$pipeline.updated_at" } } }])
+    result = {}
+    for record in db["jobs"].aggregate(pipeline=[
+        {
+            "$group": {
+                "_id": "$pipeline.project_id",
+                "latest": {"$max": "$pipeline.updated_at"}
+            }
+        }
+    ]):
+        result[record["_id"]] = get_time(record["latest"])
+    return result
 
 
 if __name__ == '__main__':
     mongo_client = MongoClient('mongodb://localhost:27017/')
     db = mongo_client['gitlab']
-    since = calculate_start_time()
+    latest_job_per_project = get_latest_job_date_per_project()
 
     mongo_output = lambda obj_as_json, type: db[type].insert_one(obj_as_json)
     stdout_output = lambda obj_as_json, type: print(json.dumps(obj_as_json, indent=2))  # noqa
 
-    get_jobs_and_traces = GetJobsAndTraces(since=since, trace_size_limit=10000, outputs=[stdout_output, mongo_output])
+    get_jobs_and_traces = GetJobsAndTraces(latest_job_per_project=latest_job_per_project, trace_size_limit=10000,
+                                           outputs=[stdout_output, mongo_output])
     repository_exporter = ExportRepository(repository_size_limit=1000000)
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
-    traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), processors=[get_jobs_and_traces, repository_exporter])
+    traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), processors=[get_jobs_and_traces])
