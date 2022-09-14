@@ -32,12 +32,30 @@ def get_last_two_keys_from_artifacts(project, environment):
                     pass
 
 
+def decrypt_key(key, keyfile):
+    with open(keyfile.name, "wb") as kf:
+        kf.write(key)
+    print(keyfile.name)
+    subprocess.run(
+        [f"{os.path.dirname(__file__)}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), keyfile.name],
+        check=True)
+    return keyfile.name + ".txt"
+
+
+def decrypt_secret(keyfile, secret_file):
+    env =  os.environ.copy()
+    env["SOPS_AGE_KEY_FILE"] = keyfile
+    subprocess.run(
+        [f"sops", "-d", secret_file], check=True, env=env)
+
+
 if __name__ == '__main__':
     # Use CI_JOB_TOKEN='[MASKED]' as private token
     # Use CI_SERVER_URL='https://gitlab.com' as url
     # Use CI_PROJECT_ID='9999' as project id
     # Use ENVIRONMENT as the environment to use
     # Use KEY_PASSWORD for the password of the two keys
+    # Use SECRETS_DIR as folder containing the encrypted secrets
     environment = os.getenv("ENVIRONMENT")
     gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("CI_JOB_TOKEN"))
 
@@ -47,13 +65,10 @@ if __name__ == '__main__':
     sorted_keys = sorted(environment_age_keys_found)
 
     new_key = environment_age_keys_found[sorted_keys[0]]
-    old_key = environment_age_keys_found[sorted_keys[1]]
-
     new_key_file = tempfile.NamedTemporaryFile(prefix="new_key-")
-    with open(new_key_file.name, "wb") as key_file:
-        key_file.write(new_key)
-    print(new_key_file.name)
+    decrypted_new_key_file = decrypt_key(new_key, new_key_file)
 
-    subprocess.run(
-        [f"{os.path.dirname(__file__)}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), new_key_file.name],
-        check=True)
+    old_key = environment_age_keys_found[sorted_keys[1]]
+    old_key_file = tempfile.NamedTemporaryFile(prefix="old_key-")
+    decrypted_old_key_file = decrypt_key(old_key, old_key_file)
+
