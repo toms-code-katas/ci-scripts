@@ -5,6 +5,7 @@ from io import BytesIO
 import os
 import re
 import subprocess
+import tempfile
 import zipfile
 import yaml
 
@@ -35,13 +36,13 @@ def get_last_two_keys_from_artifacts(project, environment):
 
 
 def decrypt_key(key, keyfile):
-    with open(keyfile.name, "wb") as kf:
+    with open(keyfile, "wb") as kf:
         kf.write(key)
-    print(keyfile.name)
+    print(keyfile)
     subprocess.run(
-        [f"{os.path.dirname(__file__)}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), keyfile.name],
+        [f"{os.path.dirname(__file__)}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), keyfile],
         check=True)
-    return keyfile.name + ".txt"
+    return keyfile + ".txt"
 
 
 def get_current_age_key_from_sops_config(sops_config_file_path):
@@ -113,47 +114,57 @@ def get_encrypted_files(secrets_folder):
     return encrypted_files
 
 
+def silent_remove(filenames):
+
+    for filename in filenames:
+        if not filename:
+            continue
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+
+
 if __name__ == '__main__':
-    # Use CI_JOB_TOKEN='[MASKED]' as private token
-    # Use CI_SERVER_URL='https://gitlab.com' as url
-    # Use CI_PROJECT_ID='9999' as project id
-    # Use ENVIRONMENT as the environment to use
-    # Use KEY_PASSWORD for the password of the two keys
-    # Use SECRETS_DIR as folder containing the encrypted secrets
-    # environment = os.getenv("ENVIRONMENT")
-    # gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("CI_JOB_TOKEN"))
-    #
-    # project = gl.projects.get(id=os.getenv("CI_PROJECT_ID"))
-    #
-    # environment_age_keys_found = get_last_two_keys_from_artifacts(project, environment)
-    # sorted_keys = sorted(environment_age_keys_found)
-    #
-    # new_key = environment_age_keys_found[sorted_keys[0]]
-    # new_key_file = tempfile.NamedTemporaryFile(prefix="new_key-")
-    # decrypted_new_key_file = decrypt_key(new_key, new_key_file)
-    #
-    # old_key = environment_age_keys_found[sorted_keys[1]]
-    # old_key_file = tempfile.NamedTemporaryFile(prefix="old_key-")
-    # decrypted_old_key_file = decrypt_key(old_key, old_key_file)
-    sops_config_file_path = f"{os.getenv('SECRETS_DIR')}/.sops.yaml"
-    old_key_file = "/tmp/test-key.txt"
-    new_key_file = "/tmp/old_key-x87s52o1.txt"
+    try:
+        # Use CI_JOB_TOKEN='[MASKED]' as private token
+        # Use CI_SERVER_URL='https://gitlab.com' as url
+        # Use CI_PROJECT_ID='9999' as project id
+        # Use ENVIRONMENT as the environment to use
+        # Use KEY_PASSWORD for the password of the two keys
+        # Use SECRETS_DIR as folder containing the encrypted secrets
+        environment = os.getenv("ENVIRONMENT")
+        gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("CI_JOB_TOKEN"))
 
-    secret_files = get_encrypted_files(os.getenv('SECRETS_DIR'))
+        project = gl.projects.get(id=os.getenv("CI_PROJECT_ID"))
 
-    current_configured_pub_age_key = get_current_age_key_from_sops_config(sops_config_file_path)
-    old_age_key_pub_key = get_pub_key_from_key_file(old_key_file)
+        environment_age_keys_found = get_last_two_keys_from_artifacts(project, environment)
+        sorted_keys = sorted(environment_age_keys_found)
 
-    if not current_configured_pub_age_key == old_age_key_pub_key:
-        raise Exception("Currently configured age key is not the same as the old key")
+        new_key = environment_age_keys_found[sorted_keys[1]]
+        encrypted_new_key_file = tempfile.NamedTemporaryFile(prefix="new_key-").name
+        decrypted_new_key_file = decrypt_key(new_key, encrypted_new_key_file)
 
-    for encrypted_file in secret_files:
-        decrypt_secret(old_key_file, encrypted_file)
+        old_key = environment_age_keys_found[sorted_keys[0]]
+        encrypted_old_key_file = tempfile.NamedTemporaryFile(prefix="old_key-").name
+        decrypted_old_key_file = decrypt_key(old_key, encrypted_old_key_file)
+        sops_config_file_path = f"{os.getenv('SECRETS_DIR')}/.sops.yaml"
 
-    new_age_key_pub_key = get_pub_key_from_key_file(new_key_file)
-    replace_age_key_in_sops_config(sops_config_file_path, old_age_key_pub_key, new_age_key_pub_key)
+        secret_files = get_encrypted_files(os.getenv('SECRETS_DIR'))
 
-    for encrypted_file in secret_files:
-        encrypt_secret(encrypted_file)
+        current_configured_pub_age_key = get_current_age_key_from_sops_config(sops_config_file_path)
+        old_age_key_pub_key = get_pub_key_from_key_file(decrypted_old_key_file)
 
+        if not current_configured_pub_age_key == old_age_key_pub_key:
+            raise Exception("Currently configured age key is not the same as the old key")
 
+        for encrypted_file in secret_files:
+            decrypt_secret(decrypted_old_key_file, encrypted_file)
+
+        new_age_key_pub_key = get_pub_key_from_key_file(decrypted_new_key_file)
+        replace_age_key_in_sops_config(sops_config_file_path, old_age_key_pub_key, new_age_key_pub_key)
+
+        for encrypted_file in secret_files:
+            encrypt_secret(encrypted_file)
+    finally:
+        silent_remove([encrypted_new_key_file, decrypted_new_key_file, encrypted_old_key_file, decrypted_old_key_file])
