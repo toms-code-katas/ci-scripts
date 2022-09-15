@@ -1,4 +1,5 @@
 import gitlab
+import glob
 from io import BytesIO
 import os
 import re
@@ -8,11 +9,11 @@ import zipfile
 import yaml
 
 
-def get_last_two_keys_from_artifacts(project, environment):
+def get_last_keys_from_artifacts(project, environment, number_of_keys=20):
     environment_age_keys_found = {}
     keys_found = 0
     for pipeline in project.pipelines.list(get_all=False):
-        for pipeline_job in pipeline.jobs.list(order_by="finished_at", scope='success', get_all=False):
+        for pipeline_job in pipeline.jobs.list(order_by="finished_at", scope='success', get_all=True):
             for artifact in pipeline_job.attributes["artifacts"]:
                 try:
                     artifact_environment = re.search("(?<=agekeys-).*(?=.zip)", artifact["filename"]).group(0)
@@ -26,21 +27,24 @@ def get_last_two_keys_from_artifacts(project, environment):
                         armoured_age_key = {name: zip.read(name) for name in zip.namelist()}
                         environment_age_keys_found.update(armoured_age_key)
                         keys_found = keys_found + 1
-                        if keys_found == 2:
-                            print(f"Found two last keys for environment {artifact_environment}")
+                        if keys_found == number_of_keys:
+                            print(f"Found {number_of_keys} eys for environment {artifact_environment}")
                             return environment_age_keys_found
                 except AttributeError:
                     pass
+    return environment_age_keys_found
 
 
-def decrypt_key(key, keyfile):
+def decrypt_key(key, keyfile, password):
     with open(keyfile, "wb") as kf:
         kf.write(key)
-    print(keyfile)
-    subprocess.run(
-        [f"{os.getcwd()}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), keyfile],
-        check=True)
-    return keyfile + ".txt"
+    output = subprocess.run(
+        [f"{os.getcwd()}/decrypt_key.sh", password, keyfile],
+        check=True, capture_output=True)
+    if "incorrect passphrase" in str(output.stdout) or "incorrect passphrase" in str(output.stderr):
+        return None
+    else:
+        return keyfile + ".txt"
 
 
 def get_current_age_key_from_sops_config(sops_config_file_path):
@@ -125,6 +129,30 @@ def silent_remove(filenames):
             pass
 
 
+def get_key_file_for_pub_key(cluster_keys_found, pub_key):
+    sorted_keys = sorted(cluster_keys_found, reverse=True)
+    for key_name in sorted_keys:
+        key = cluster_keys_found[key_name]
+        encrypted_key_file = tempfile.NamedTemporaryFile(prefix="key-").name
+        decrypted_key_file = decrypt_key(key, encrypted_key_file, os.getenv("KEY_PASSWORD"))
+        if not decrypted_key_file and os.getenv("OLD_KEY_PASSWORD"):
+            print(f"key password was incorrect. Trying old password")
+            decrypted_key_file = decrypt_key(key, encrypted_key_file, os.getenv("OLD_KEY_PASSWORD"))
+            if not decrypted_key_file:
+                print(f"old key password was incorrect. Aborting")
+                raise Exception("No correct password found")
+        elif not decrypted_key_file:
+            print(f"key password was incorrect and no old key was provided. Aborting")
+            raise Exception("Key password incorrect")
+
+        other_pub_key = get_pub_key_from_key_file(decrypted_key_file)
+        if pub_key == other_pub_key:
+            silent_remove([encrypted_key_file])
+            return decrypted_key_file
+        else:
+            silent_remove([encrypted_key_file, decrypted_key_file])
+
+
 if __name__ == '__main__':
     try:
         # Use PERSONAL_ACCESS_TOKEN as private token for api
@@ -132,32 +160,32 @@ if __name__ == '__main__':
         # Use CI_PROJECT_ID='9999' as project where the keys are stored
         # Use CLUSTER as the environment
         # Use KEY_PASSWORD for the password of the two keys
+        # Use OLD_KEY_PASSWORD for the old password in case of a password change
         # Use SECRETS_DIR as folder containing the encrypted secrets
+
         cluster = os.getenv("CLUSTER")
+        sops_config_file_path = f"{os.getenv('SECRETS_DIR')}/.sops.yaml"
+        current_configured_pub_key = get_current_age_key_from_sops_config(sops_config_file_path)
+
         gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("PERSONAL_ACCESS_TOKEN"))
 
         project = gl.projects.get(id=os.getenv("CI_PROJECT_ID"))
 
-        cluster_keys_found = get_last_two_keys_from_artifacts(project, cluster)
-        sorted_keys = sorted(cluster_keys_found)
+        cluster_keys_found = get_last_keys_from_artifacts(project, cluster)
+        decrypted_old_key_file = get_key_file_for_pub_key(cluster_keys_found, current_configured_pub_key)
 
-        new_key = cluster_keys_found[sorted_keys[1]]
+        sorted_keys = sorted(cluster_keys_found, reverse=True)
+
+        new_key = cluster_keys_found[sorted_keys[0]]
         encrypted_new_key_file = tempfile.NamedTemporaryFile(prefix="new_key-").name
-        decrypted_new_key_file = decrypt_key(new_key, encrypted_new_key_file)
+        decrypted_new_key_file = decrypt_key(new_key, encrypted_new_key_file, os.getenv("KEY_PASSWORD"))
 
-        old_key = cluster_keys_found[sorted_keys[0]]
-        encrypted_old_key_file = tempfile.NamedTemporaryFile(prefix="old_key-").name
-        decrypted_old_key_file = decrypt_key(old_key, encrypted_old_key_file)
-        sops_config_file_path = f"{os.getenv('SECRETS_DIR')}/.sops.yaml"
-
-        secret_files = get_encrypted_files(os.getenv('SECRETS_DIR'))
-
-        current_configured_pub_key = get_current_age_key_from_sops_config(sops_config_file_path)
         old_key_pub_key = get_pub_key_from_key_file(decrypted_old_key_file)
 
         if not current_configured_pub_key == old_key_pub_key:
             raise Exception("Currently configured age key is not the same as the old key")
 
+        secret_files = get_encrypted_files(os.getenv('SECRETS_DIR'))
         for encrypted_file in secret_files:
             decrypt_secret(decrypted_old_key_file, encrypted_file)
 
@@ -167,4 +195,4 @@ if __name__ == '__main__':
         for encrypted_file in secret_files:
             encrypt_secret(encrypted_file)
     finally:
-        silent_remove([encrypted_new_key_file, decrypted_new_key_file, encrypted_old_key_file, decrypted_old_key_file])
+        silent_remove([encrypted_new_key_file, decrypted_new_key_file, decrypted_old_key_file])
