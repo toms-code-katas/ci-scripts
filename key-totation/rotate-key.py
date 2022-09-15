@@ -1,5 +1,3 @@
-import sys
-
 import gitlab
 from io import BytesIO
 import os
@@ -40,7 +38,7 @@ def decrypt_key(key, keyfile):
         kf.write(key)
     print(keyfile)
     subprocess.run(
-        [f"{os.path.dirname(__file__)}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), keyfile],
+        [f"{os.getcwd()}/decrypt_key.sh", os.getenv("KEY_PASSWORD"), keyfile],
         check=True)
     return keyfile + ".txt"
 
@@ -104,12 +102,14 @@ def encrypt_secret(secret_file):
 def get_encrypted_files(secrets_folder):
     pattern = "(?:(?<=recipient=)|(?<=recipient: )).*"
     encrypted_files=[]
-    for file in os.scandir(secrets_folder):
+    files = (os.path.join(secrets_folder, file) for file in os.listdir(secrets_folder)
+             if os.path.isfile(os.path.join(secrets_folder, file)))
+    for file in files:
         with open(file) as file_content:
             for line in file_content:
                 match = re.search(pattern=pattern, string=line)
                 if match:
-                    encrypted_files.append(file.path)
+                    encrypted_files.append(file)
                     break
     return encrypted_files
 
@@ -127,42 +127,42 @@ def silent_remove(filenames):
 
 if __name__ == '__main__':
     try:
-        # Use CI_JOB_TOKEN='[MASKED]' as private token
+        # Use PERSONAL_ACCESS_TOKEN as private token for api
         # Use CI_SERVER_URL='https://gitlab.com' as url
-        # Use CI_PROJECT_ID='9999' as project id
-        # Use ENVIRONMENT as the environment to use
+        # Use CI_PROJECT_ID='9999' as project where the keys are stored
+        # Use CLUSTER as the environment
         # Use KEY_PASSWORD for the password of the two keys
         # Use SECRETS_DIR as folder containing the encrypted secrets
-        environment = os.getenv("ENVIRONMENT")
-        gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("CI_JOB_TOKEN"))
+        cluster = os.getenv("CLUSTER")
+        gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("PERSONAL_ACCESS_TOKEN"))
 
         project = gl.projects.get(id=os.getenv("CI_PROJECT_ID"))
 
-        environment_age_keys_found = get_last_two_keys_from_artifacts(project, environment)
-        sorted_keys = sorted(environment_age_keys_found)
+        cluster_keys_found = get_last_two_keys_from_artifacts(project, cluster)
+        sorted_keys = sorted(cluster_keys_found)
 
-        new_key = environment_age_keys_found[sorted_keys[1]]
+        new_key = cluster_keys_found[sorted_keys[1]]
         encrypted_new_key_file = tempfile.NamedTemporaryFile(prefix="new_key-").name
         decrypted_new_key_file = decrypt_key(new_key, encrypted_new_key_file)
 
-        old_key = environment_age_keys_found[sorted_keys[0]]
+        old_key = cluster_keys_found[sorted_keys[0]]
         encrypted_old_key_file = tempfile.NamedTemporaryFile(prefix="old_key-").name
         decrypted_old_key_file = decrypt_key(old_key, encrypted_old_key_file)
         sops_config_file_path = f"{os.getenv('SECRETS_DIR')}/.sops.yaml"
 
         secret_files = get_encrypted_files(os.getenv('SECRETS_DIR'))
 
-        current_configured_pub_age_key = get_current_age_key_from_sops_config(sops_config_file_path)
-        old_age_key_pub_key = get_pub_key_from_key_file(decrypted_old_key_file)
+        current_configured_pub_key = get_current_age_key_from_sops_config(sops_config_file_path)
+        old_key_pub_key = get_pub_key_from_key_file(decrypted_old_key_file)
 
-        if not current_configured_pub_age_key == old_age_key_pub_key:
+        if not current_configured_pub_key == old_key_pub_key:
             raise Exception("Currently configured age key is not the same as the old key")
 
         for encrypted_file in secret_files:
             decrypt_secret(decrypted_old_key_file, encrypted_file)
 
-        new_age_key_pub_key = get_pub_key_from_key_file(decrypted_new_key_file)
-        replace_age_key_in_sops_config(sops_config_file_path, old_age_key_pub_key, new_age_key_pub_key)
+        new_key_pub_key = get_pub_key_from_key_file(decrypted_new_key_file)
+        replace_age_key_in_sops_config(sops_config_file_path, old_key_pub_key, new_key_pub_key)
 
         for encrypted_file in secret_files:
             encrypt_secret(encrypted_file)
