@@ -154,6 +154,9 @@ def get_key_file_for_pub_key(cluster_keys_found, pub_key):
 
 
 if __name__ == '__main__':
+    encrypted_new_key_file = None
+    decrypted_new_key_file = None
+    decrypted_old_key_file = None
     try:
         # Use PERSONAL_ACCESS_TOKEN as private token for api
         # Use CI_SERVER_URL='https://gitlab.com' as url
@@ -174,9 +177,17 @@ if __name__ == '__main__':
         cluster_keys_found = get_last_keys_from_artifacts(project, cluster)
         decrypted_old_key_file = get_key_file_for_pub_key(cluster_keys_found, current_configured_pub_key)
 
-        sorted_keys = sorted(cluster_keys_found, reverse=True)
+        last_key_file = glob.glob(f'{os.getenv("CI_PROJECT_DIR")}/identity.agekey.*')
 
-        new_key = cluster_keys_found[sorted_keys[0]]
+        if not last_key_file:
+            print("No new key file found as an artifact. Using last artifact uploaded")
+            sorted_keys = sorted(cluster_keys_found, reverse=True)
+            new_key = cluster_keys_found[sorted_keys[0]]
+        else:
+            print(f"New key file {last_key_file[0]} found")
+            with open(f'{last_key_file[0]}', 'rb') as file:
+                new_key = file.read()
+
         encrypted_new_key_file = tempfile.NamedTemporaryFile(prefix="new_key-").name
         decrypted_new_key_file = decrypt_key(new_key, encrypted_new_key_file, os.getenv("KEY_PASSWORD"))
 
