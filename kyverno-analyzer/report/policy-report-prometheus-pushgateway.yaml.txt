@@ -1,0 +1,3762 @@
+
+Applying 27 policies to 3 resources... 
+(Total number of result count may vary as the policy is mutated by Kyverno. To check the mutated policy please try with log level 5)
+----------------------------------------------------------------------
+POLICY REPORT:
+----------------------------------------------------------------------
+apiVersion: wgpolicyk8s.io/v1alpha2
+kind: ClusterPolicyReport
+metadata:
+  name: clusterpolicyreport
+results:
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-docker-sock-mount' passed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Docker Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-docker-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-containerd-sock-mount' passed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the Containerd Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-containerd-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-crio-sock-mount' passed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of the CRI-O Unix socket is not allowed.
+  policy: disallow-container-sock-mounts
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-crio-sock-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-helm-tiller' passed.
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Helm Tiller is not allowed
+  policy: disallow-helm-tiller
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-helm-tiller
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-require-image-tag' passed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: An image tag is required.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-require-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-image-tag' passed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Using a mutable image tag e.g. 'latest' is not allowed.
+  policy: disallow-latest-tag
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-image-tag
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: 'failed to substitute variables in deny conditions: failed to resolve request.object.spec.template.spec.[containers,
+    initContainers][].securityContext.capabilities.drop.contains(@, ''ALL'') | !contains(@,
+    `false`) at path /0/key: JMESPath query failed: Invalid type for: <nil>, expected:
+    []jmespath.JpType{"array", "string"}'
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: error
+  rule: autogen-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: All capabilities should be dropped with only those required added back.
+    Drop `ALL` must be specified in all caps.
+  policy: drop-all-capabilities
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-resources' passed.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: CPU and memory resource requests and limits are required.
+  policy: require-requests-limits
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-resources
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Liveness and readiness probes are required.
+  policy: require-pod-probes
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Liveness and readiness probes are required.
+  policy: require-pod-probes
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Liveness and readiness probes are required.
+  policy: require-pod-probes
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Liveness and readiness probes are required.
+  policy: require-pod-probes
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Liveness and readiness probes are required.
+  policy: require-pod-probes
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: 'validation error: Liveness and readiness probes are required. Rule autogen-validate-livenessProbe-readinessProbe
+    failed at path /spec/template/spec/containers/0/livenessProbe/periodSeconds/'
+  policy: require-pod-probes
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: fail
+  rule: autogen-validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-readOnlyRootFilesystem' passed.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Root filesystem must be read-only.
+  policy: require-ro-rootfs
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-readOnlyRootFilesystem
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Services of type NodePort are not allowed.
+  policy: restrict-nodeport
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-nodeport
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'validate-nodeport' passed.
+  policy: restrict-nodeport
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: validate-nodeport
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Services of type NodePort are not allowed.
+  policy: restrict-nodeport
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-nodeport
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-capabilities' passed.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of additional capabilities beyond the default set is not allowed.
+    The fields spec.containers[*].securityContext.capabilities.add and spec.initContainers[*].securityContext.capabilities.add
+    must be empty.
+  policy: disallow-add-capabilities
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-capabilities
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-host-namespaces' passed.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Sharing the host namespaces is disallowed. The fields spec.hostNetwork,
+    spec.hostIPC, and spec.hostPID must not be set to true.
+  policy: disallow-host-namespaces
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-host-path' passed.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: HostPath volumes are forbidden. The fields spec.volumes[*].hostPath must
+    not be set.
+  policy: disallow-host-path
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-path
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-host-ports' passed.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of host ports is disallowed. The fields spec.containers[*].ports[*].hostPort
+    and spec.initContainers[*].ports[*].hostPort must be empty.
+  policy: disallow-host-ports
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-host-ports
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-priviledged-containers' passed.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privileged mode is disallowed. The fields spec.containers[*].securityContext.privileged
+    and spec.initContainers[*].securityContext.privileged must not be set to true.
+  policy: disallow-privileged-containers
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-priviledged-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-check-proc-mount' passed.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing the proc mount from the default is not allowed. The fields spec.containers[*].securityContext.procMount
+    and spec.initContainers[*].securityContext.procMount must not be changed from
+    `Default`.
+  policy: require-default-proc-mount
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-proc-mount
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-seLinux' passed.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting custom SELinux options is disallowed. The fields spec.securityContext.seLinuxOptions,
+    spec.containers[*].securityContext.seLinuxOptions, and spec.initContainers[*].securityContext.seLinuxOptions
+    must be empty.
+  policy: disallow-selinux
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-seLinux
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-app-armor' passed.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Specifying other AppArmor profiles is disallowed. The annotation container.apparmor.security.beta.kubernetes.io
+    must not be defined, or must not be set to anything other than `runtime/default`.
+  policy: restrict-apparmor-profiles
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-app-armor
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-sysctls' passed.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Setting additional sysctls above the allowed type is disallowed. The field
+    spec.securityContext.sysctls must not use any other names than 'kernel.shm_rmid_forced',
+    'net.ipv4.ip_local_port_range', 'net.ipv4.tcp_syncookies' and 'net.ipv4.ping_group_range'.
+  policy: restrict-sysctls
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-sysctls
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-deny-privilege-escalation' passed.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Privilege escalation is disallowed. The fields spec.containers[*].securityContext.allowPrivilegeEscalation,
+    and spec.initContainers[*].securityContext.allowPrivilegeEscalation must be undefined
+    or set to `false`.
+  policy: deny-privilege-escalation
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-deny-privilege-escalation
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-check-runasgroup' passed.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running with root group IDs is disallowed. The fields spec.securityContext.runAsGroup,
+    spec.containers[*].securityContext.runAsGroup, and spec.initContainers[*].securityContext.runAsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-runasgroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-check-supplementalGroups' passed.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Adding of supplemental group IDs is not allowed. The field spec.securityContext.supplementalGroups
+    must not be defined.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-supplementalGroups
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-check-fsGroup' passed.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Changing to root group ID is disallowed. The field spec.securityContext.fsGroup
+    must be empty or greater than zero.
+  policy: require-non-root-groups
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-fsGroup
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-check-containers' anyPattern[0] passed.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Running as root is not allowed. The fields spec.securityContext.runAsNonRoot,
+    spec.containers[*].securityContext.runAsNonRoot, and spec.initContainers[*].securityContext.runAsNonRoot
+    must be `true`.
+  policy: require-run-as-non-root
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-check-containers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-restrict-seccomp' anyPattern[0] passed.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-restrict-seccomp
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-restrict-seccomp-initcontainers' anyPattern[0]
+    passed.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Use of custom Seccomp profiles is disallowed. The fields spec.securityContext.seccompProfile.type,
+    spec.containers[*].securityContext.seccompProfile.type, and spec.initContainers[*].securityContext.seccompProfile.type
+    must be set to `RuntimeDefault` or `Localhost`.
+  policy: restrict-seccomp
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-restrict-seccomp-initcontainers
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: validation rule 'autogen-validate-registries' passed.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: pass
+  rule: autogen-validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Unknown image registry.
+  policy: restrict-image-registries
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: autogen-cronjob-validate-registries
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: .spec.serviceAccountName is required
+  policy: flux-multi-tenancy
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: enforce-service-account-name
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: .spec.serviceAccountName is required
+  policy: flux-multi-tenancy
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: enforce-service-account-name
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: .spec.serviceAccountName is required
+  policy: flux-multi-tenancy
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: enforce-service-account-name
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: metadata.labels.name={{ request.object.metadata.labels.name }} should be
+    equal to Namespace metadata.name={{ request.object.metadata.name || '' }}
+  policy: ensure-labels
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: ensure-labels
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: metadata.labels.name={{ request.object.metadata.labels.name }} should be
+    equal to Namespace metadata.name={{ request.object.metadata.name || '' }}
+  policy: ensure-labels
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: ensure-labels
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: metadata.labels.name={{ request.object.metadata.labels.name }} should be
+    equal to Namespace metadata.name={{ request.object.metadata.name || '' }}
+  policy: ensure-labels
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: ensure-labels
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Namespaces with the suffix system cannot be created.
+  policy: restrict-system-namespaces
+  resources:
+  - apiVersion: v1
+    kind: ServiceAccount
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-system-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Namespaces with the suffix system cannot be created.
+  policy: restrict-system-namespaces
+  resources:
+  - apiVersion: v1
+    kind: Service
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-system-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: Namespaces with the suffix system cannot be created.
+  policy: restrict-system-namespaces
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: skip
+  rule: restrict-system-namespaces
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+summary:
+  error: 1
+  fail: 1
+  pass: 26
+  skip: 230
+  warn: 0
+
