@@ -44,6 +44,6 @@ if __name__ == '__main__':
             elif collect:
                 if hasattr(event, "value"):
                     message = message + event.value + "\n"
-        if not errors_found == expected_errors:
+        if not errors_found == config.expected_errors:
             print(f"Expected {config.expected_errors} errors. Found {errors_found}")
             exit(1)
