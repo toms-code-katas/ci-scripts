@@ -23,7 +23,7 @@ class Result:
         matches = True
         for to_ignore in config.ignore_errors:
             error_name = to_ignore["name"]
-            if not error_name in self.errors_ignored:
+            if error_name not in self.errors_ignored:
                 print(f"Expected error {error_name} not found")
                 matches = False
             elif self.errors_ignored[error_name] != to_ignore["expected_errors"]:
@@ -62,13 +62,13 @@ if __name__ == '__main__':
                             all_matches_found = False
                             break
                     if all_matches_found:
-                        print(f"message {message} matches ignore pattern {to_ignore['name']}")
+                        print(f"message: \"{message}\" matches ignore pattern \"{to_ignore['name']}\"")
                         result.add_ignored_error(to_ignore["name"])
                         break
                 message = ""
             elif collect:
                 if hasattr(event, "value"):
-                    message = message + event.value + "\n"
+                    message = message + event.value + " "
 
     if not result.matches_config(config):
         print(f"Expected errors do not match found errors")
