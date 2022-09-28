@@ -1,0 +1,7 @@
+ignore_errors:
+  - name: "prometheus-pushgateway-liveness-and-readiness-probes-are-required"
+    patterns:
+      - "validation error"
+      - "Liveness and readiness probes are required"
+      - "release-name-prometheus-pushgateway"
+expected_errors: 1
