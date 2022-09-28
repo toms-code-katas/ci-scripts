@@ -33,6 +33,45 @@ class Result:
         return matches
 
 
+class Analyzer:
+
+    def __init__(self, config, report_path):
+        self.config = config
+        self.report_path = report_path
+        self.result = Result()
+        self.collect = False
+        self.current_message = ""
+
+    def analyze(self):
+        with open(self.report_path, 'r') as handle:
+            for event in yaml.parse(handle):
+                if isinstance(event, yaml.MappingStartEvent):
+                    self.collect = True
+                elif isinstance(event, yaml.MappingEndEvent):
+                    self.analyze_current_message()
+                    self.current_message = ""
+                elif self.collect:
+                    if hasattr(event, "value"):
+                        self.current_message = self.current_message + event.value + " "
+
+        if not self.result.matches_config(self.config):
+            print(f"Expected errors do not match found errors")
+            exit(1)
+
+    def analyze_current_message(self):
+        self.collect = False
+        for error_to_ignore in self.config.ignore_errors:
+            all_matches_found = True
+            for pattern in error_to_ignore["patterns"]:
+                if not re.search(pattern, self.current_message):
+                    all_matches_found = False
+                    break
+            if all_matches_found:
+                print(f"message: \"{self.current_message}\" matches ignore pattern \"{error_to_ignore['name']}\"")
+                self.result.add_ignored_error(error_to_ignore["name"])
+                return
+
+
 def get_config(path_to_config_file):
     with open(path_to_config_file) as f:
         # use safe_load instead load
@@ -44,32 +83,7 @@ def get_config(path_to_config_file):
 # tail -n +7 policy-report.yaml > policy-report-without-header.yaml
 if __name__ == '__main__':
 
-    config = get_config(sys.argv[2])
-    result = Result()
+    cfg = get_config(sys.argv[2])
 
-    with open(sys.argv[1], 'r') as handle:
-        collect = False
-        message = ""
-        for event in yaml.parse(handle):
-            if isinstance(event, yaml.MappingStartEvent):
-                collect = True
-            elif isinstance(event, yaml.MappingEndEvent):
-                collect = False
-                for to_ignore in config.ignore_errors:
-                    all_matches_found = True
-                    for pattern in to_ignore["patterns"]:
-                        if not re.search(pattern, message):
-                            all_matches_found = False
-                            break
-                    if all_matches_found:
-                        print(f"message: \"{message}\" matches ignore pattern \"{to_ignore['name']}\"")
-                        result.add_ignored_error(to_ignore["name"])
-                        break
-                message = ""
-            elif collect:
-                if hasattr(event, "value"):
-                    message = message + event.value + " "
-
-    if not result.matches_config(config):
-        print(f"Expected errors do not match found errors")
-        exit(1)
+    analyzer = Analyzer(cfg, sys.argv[1])
+    analyzer.analyze()
