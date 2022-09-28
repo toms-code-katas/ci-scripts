@@ -4,4 +4,4 @@ ignore_errors:
       - "validation error"
       - "Liveness and readiness probes are required"
       - "release-name-prometheus-pushgateway"
-expected_errors: 1
+    expected_errors: 2

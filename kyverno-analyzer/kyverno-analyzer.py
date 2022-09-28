@@ -8,6 +8,31 @@ class Config:
         self.__dict__.update(entries)
 
 
+class Result:
+
+    def __init__(self):
+        self.errors_ignored = {}
+
+    def add_ignored_error(self, name):
+        if name in self.errors_ignored:
+            self.errors_ignored[name] = self.errors_ignored[name] + 1
+        else:
+            self.errors_ignored[name] = 1
+
+    def matches_config(self, config):
+        matches = True
+        for to_ignore in config.ignore_errors:
+            error_name = to_ignore["name"]
+            if not error_name in self.errors_ignored:
+                print(f"Expected error {error_name} not found")
+                matches = False
+            elif self.errors_ignored[error_name] != to_ignore["expected_errors"]:
+                print(f"Expected {to_ignore['expected_errors']} occurrences of error \"{error_name}\""
+                      f" found {self.errors_ignored[error_name]} occurrences")
+                matches = False
+        return matches
+
+
 def get_config(path_to_config_file):
     with open(path_to_config_file) as f:
         # use safe_load instead load
@@ -20,11 +45,11 @@ def get_config(path_to_config_file):
 if __name__ == '__main__':
 
     config = get_config(sys.argv[2])
+    result = Result()
 
     with open(sys.argv[1], 'r') as handle:
         collect = False
         message = ""
-        errors_found = 0
         for event in yaml.parse(handle):
             if isinstance(event, yaml.MappingStartEvent):
                 collect = True
@@ -38,12 +63,13 @@ if __name__ == '__main__':
                             break
                     if all_matches_found:
                         print(f"message {message} matches ignore pattern {to_ignore['name']}")
-                        errors_found += 1
+                        result.add_ignored_error(to_ignore["name"])
                         break
                 message = ""
             elif collect:
                 if hasattr(event, "value"):
                     message = message + event.value + "\n"
-        if not errors_found == config.expected_errors:
-            print(f"Expected {config.expected_errors} errors. Found {errors_found}")
-            exit(1)
+
+    if not result.matches_config(config):
+        print(f"Expected errors do not match found errors")
+        exit(1)
