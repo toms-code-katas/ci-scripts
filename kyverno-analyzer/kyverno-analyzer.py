@@ -19,12 +19,6 @@ def get_config(path_to_config_file):
 # tail -n +7 policy-report.yaml > policy-report-without-header.yaml
 if __name__ == '__main__':
 
-    ignore_errors = {"prometheus-pushgateway-liveness-and-readiness-probes-are-required": [
-        r"validation error",
-        r"Liveness and readiness probes are required",
-        r"release-name-prometheus-pushgateway"]}
-    expected_errors = 1
-
     config = get_config(sys.argv[2])
 
     with open(sys.argv[1], 'r') as handle:
