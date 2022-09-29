@@ -1,9 +1,3 @@
-
-Applying 27 policies to 3 resources... 
-(Total number of result count may vary as the policy is mutated by Kyverno. To check the mutated policy please try with log level 5)
-----------------------------------------------------------------------
-POLICY REPORT:
-----------------------------------------------------------------------
 apiVersion: wgpolicyk8s.io/v1alpha2
 kind: ClusterPolicyReport
 metadata:
@@ -1093,6 +1087,21 @@ results:
     namespace: default
   result: skip
   rule: validate-livenessProbe-readinessProbe
+  scored: true
+  source: Kyverno
+  timestamp:
+    nanos: 0
+    seconds: 1664350828
+- message: 'validation error: Liveness and readiness probes are required. Rule autogen-validate-livenessProbe-readinessProbe
+    failed at path /spec/template/spec/containers/0/livenessProbe/periodSeconds/'
+  policy: require-pod-probes
+  resources:
+  - apiVersion: apps/v1
+    kind: Deployment
+    name: release-name-prometheus-pushgateway
+    namespace: default
+  result: fail
+  rule: autogen-validate-livenessProbe-readinessProbe
   scored: true
   source: Kyverno
   timestamp:

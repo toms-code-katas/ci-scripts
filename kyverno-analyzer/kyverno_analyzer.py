@@ -56,7 +56,7 @@ class Analyzer:
 
         if not self.result.matches_config(self.config):
             print(f"Expected errors do not match found errors")
-            exit(1)
+            return False
 
     def analyze_current_message(self):
         self.collect = False
@@ -86,4 +86,6 @@ if __name__ == '__main__':
     cfg = get_config(sys.argv[2])
 
     analyzer = Analyzer(cfg, sys.argv[1])
-    analyzer.analyze()
+    if not analyzer.analyze():
+        exit(1)
+    exit(0)
