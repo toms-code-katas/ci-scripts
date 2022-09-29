@@ -1,0 +1,9 @@
+rules:
+- name: "prometheus-pushgateway-liveness-and-readiness-probes-are-required"
+  files:
+  - "test-1-policy-report.yaml"
+  patterns:
+  - "validation error"
+  - "Liveness and readiness probes are required"
+  - "release-name-prometheus-pushgateway"
+  expected_errors: 2

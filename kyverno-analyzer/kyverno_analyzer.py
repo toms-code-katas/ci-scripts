@@ -48,6 +48,9 @@ class Analyzer:
         self.select_rules_for_report_file()
 
     def analyze(self):
+        if not self.applicable_rules:
+            return not self.has_errors()
+
         with open(self.report_path, 'r') as handle:
             for event in yaml.parse(handle):
                 if isinstance(event, yaml.MappingStartEvent):
@@ -64,6 +67,29 @@ class Analyzer:
             print(f"Expected errors do not match found errors")
             return False
         return True
+
+    def has_errors(self):
+        summary_element_found = False
+        error_element_found = False
+        number_of_errors = -1
+
+        with open(self.report_path, 'r') as handle:
+            for event in yaml.parse(handle):
+                if isinstance(event, yaml.ScalarEvent):
+                    if event.value == "summary":
+                        summary_element_found = True
+                    elif summary_element_found and event.value == "error":
+                        error_element_found = True
+                    elif summary_element_found and error_element_found:
+                        number_of_errors = int(event.value)
+                        break
+
+        if number_of_errors == -1:
+            print("No summary found")
+            return False
+        elif number_of_errors != 0:
+            print(f"Summary of file {self.report_path} contains {number_of_errors} errors. None were expected")
+            return True
 
     def analyze_current_message(self):
         self.collect = False
