@@ -26,10 +26,10 @@ class Result:
         for rule in applicable_rules:
             rule_name = rule["name"]
             if rule_name not in self.errors_ignored:
-                print(f"\033[1;91m\n\U00002716 Expected match for {rule_name} not found\033[0m")
+                print(f"\033[1;91m\U00002716 Expected match for {rule_name} not found\033[0m")
                 matches = False
             elif self.errors_ignored[rule_name] != rule["expected_errors"]:
-                print(f"\033[1;91m\n\U00002716 Expected {rule['expected_errors']} occurrences of error \"{rule_name}\""
+                print(f"\033[1;91m\U00002716 Expected {rule['expected_errors']} occurrences of error \"{rule_name}\""
                       f" found {self.errors_ignored[rule_name]} occurrences\033[0m")
                 matches = False
             elif self.errors_ignored[rule_name] == rule["expected_errors"]:
@@ -67,7 +67,7 @@ class Analyzer:
                         self.current_message = self.current_message + event.value + " "
 
         if not self.result.matches_config(self.applicable_rules):
-            print(f"\033[1;91m\n\U00002716 Expected errors do not match errors found\033[0m")
+            print(f"\033[1;91m\U00002716 Expected errors do not match errors found\033[0m")
             return False
         return True
 
@@ -92,11 +92,11 @@ class Analyzer:
             return True
         elif number_of_errors != 0:
             print(
-                f"\033[1;91m\n\U00002716 Summary of report {self.report_path} contains {number_of_errors} errors."
+                f"\033[1;91m\U00002716 Summary of report {self.report_path} contains {number_of_errors} errors."
                 f" None were expected\033[0m")
             return True
         elif number_of_errors == 0:
-            print(f"\033[1;92m\n\U00002714 No rules configured for report {self.report_path}, No errors found\033[0m")
+            print(f"\033[1;92m\U00002714 No rules configured for report {self.report_path}, No errors found\033[0m")
 
     def analyze_current_message(self):
         self.collect = False
@@ -108,7 +108,7 @@ class Analyzer:
                     break
 
             if all_matches_found:
-                print(f"\033[1;92m\n\U00002714 Found match for rule \"{rule['name']}\"\033[0m")
+                print(f"\033[1;92m\U00002714 Found match for rule \"{rule['name']}\"\033[0m")
                 self.result.add_ignored_error(rule["name"])
             else:
                 return False
