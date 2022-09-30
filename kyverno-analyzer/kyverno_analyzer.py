@@ -108,7 +108,10 @@ class Analyzer:
 
     def get_config(self, config_path):
         with open(config_path) as f:
+            print(f"Using file {config_path} for config")
             config_map = yaml.safe_load(f)
+            print("Configuration:")
+            print(config_map)
             return Config(**config_map)
 
     def select_rules_for_report_file(self):
