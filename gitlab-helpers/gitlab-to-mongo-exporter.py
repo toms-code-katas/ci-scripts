@@ -6,6 +6,7 @@ import os
 import tempfile
 import time
 
+from elasticsearch import Elasticsearch
 from pymongo import MongoClient
 
 
@@ -50,6 +51,9 @@ class GetJobsAndTraces:
         updated_after = None
         if project.id in self.latest_job_per_project:
             updated_after = self.latest_job_per_project[project.id]
+        else:
+            updated_after = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
+                days=365)
 
         for pipeline in project.pipelines.list(updated_after=updated_after, get_all=True):
             for pipeline_job in pipeline.jobs.list(get_all=True):
@@ -59,14 +63,14 @@ class GetJobsAndTraces:
 
     def output_job_and_trace(self, job):
         if self.trace_exists_and_does_not_exceed_size_limit(job):
-            job_as_json = self.job_to_json(job)
+            job_as_dict = self.job_to_dict(job)
             for opt in self.outputs:
-                opt(job_as_json, "jobs")
+                opt(job_as_dict.copy(), "jobs")
 
-    def job_to_json(self, job):
-        job_as_json = json.loads(job.to_json())
-        job_as_json["trace"] = job.trace().decode("utf-8")
-        return job_as_json
+    def job_to_dict(self, job):
+        job_as_dict = json.loads(job.to_json())
+        job_as_dict["trace"] = job.trace().decode("utf-8")
+        return job_as_dict
 
     def trace_exists_and_does_not_exceed_size_limit(self, job):
         for artifact in job.attributes["artifacts"]:
@@ -93,15 +97,15 @@ def traverse_all_projects_in_group(group_id: str, processors):
         traverse_all_projects_in_group(sub_group.id, processors)
 
 
-def get_time(latest, offset: int=0):
+def get_time(latest, offset: int = 0):
     latest = latest.replace("Z", "+00:00")
     return datetime.datetime.fromisoformat(latest) + datetime.timedelta(seconds=offset)
 
 
-def get_latest_job_date_per_project():
+def get_latest_job_date_per_project(mongo_db):
     # db.jobs.aggregate([ { $group: { _id: "$pipeline.project_id", latests: { $max: "$pipeline.updated_at" } } }])
     result = {}
-    for record in db["jobs"].aggregate(pipeline=[
+    for record in mongo_db["jobs"].aggregate(pipeline=[
         {
             "$group": {
                 "_id": "$pipeline.project_id",
@@ -115,14 +119,21 @@ def get_latest_job_date_per_project():
 
 if __name__ == '__main__':
     mongo_client = MongoClient('mongodb://localhost:27017/')
-    db = mongo_client['gitlab']
-    latest_job_per_project = get_latest_job_date_per_project()
+    mongo_db = mongo_client['gitlab']
+    es_client = Elasticsearch("http://localhost:9200")
+    latest_job_per_project = get_latest_job_date_per_project(mongo_db)
 
-    mongo_output = lambda obj_as_json, type: db[type].insert_one(obj_as_json)
+    def elastic_output(obj_as_json, type):
+        es_client.index(index="jobs", document=obj_as_json)
+
+    def mongo_output(obj_as_json, type):
+        mongo_db[type].insert_one(obj_as_json)
+
     stdout_output = lambda obj_as_json, type: print(json.dumps(obj_as_json, indent=2))  # noqa
 
-    get_jobs_and_traces = GetJobsAndTraces(latest_job_per_project=latest_job_per_project, trace_size_limit=10000,
-                                           outputs=[stdout_output, mongo_output])
+    get_jobs_and_traces = GetJobsAndTraces(latest_job_per_project=latest_job_per_project,
+                                           trace_size_limit=10000,
+                                           outputs=[stdout_output, mongo_output, elastic_output])
     repository_exporter = ExportRepository(repository_size_limit=1000000)
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
