@@ -54,20 +54,25 @@ class GetJobsAndTraces:
             updated_after = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
                 days=365)
 
+        new_jobs = 0
         for pipeline in project.pipelines.list(updated_after=updated_after, get_all=True):
             for pipeline_job in pipeline.jobs.list(get_all=True):
                 if get_time(pipeline_job.created_at) > updated_after:
                     job = project.jobs.get(pipeline_job.id)
                     self.output_job_and_trace(job)
+                    new_jobs += 1
+
+        print(f"Added {new_jobs} new jobs for project \"{project.name}\"")
 
     def output_job_and_trace(self, job):
+        job_as_dict = job.asdict()
         if self.trace_exists_and_does_not_exceed_size_limit(job):
-            job_as_dict = self.job_to_dict(job)
-            for opt in self.outputs:
-                opt(job_as_dict.copy(), "jobs")
+            job_as_dict = self.add_trace(job)
 
-    def job_to_dict(self, job):
-        job_as_dict = json.loads(job.to_json())
+        for opt in self.outputs:
+            opt(job_as_dict.copy(), "jobs")
+
+    def add_trace(self, job_as_dict, job):
         job_as_dict["trace"] = job.trace().decode("utf-8")
         return job_as_dict
 
@@ -123,7 +128,7 @@ if __name__ == '__main__':
     latest_job_per_project = get_latest_job_date_per_project(mongo_db)
 
     def elastic_output(obj_as_json, type):
-        es_client.index(index="jobs", document=obj_as_json)
+        es_client.index(index=type, document=obj_as_json)
 
     def mongo_output(obj_as_json, type):
         mongo_db[type].insert_one(obj_as_json)
