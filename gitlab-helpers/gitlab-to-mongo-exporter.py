@@ -1,3 +1,4 @@
+import abc
 import datetime
 import json
 
@@ -6,8 +7,36 @@ import os
 import tempfile
 import time
 
+from abc import ABC
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
+from typing import Dict
+
+
+class Sink(ABC):
+
+    @abc.abstractmethod
+    def sink(self, document: Dict, doc_type: str):
+        pass
+
+
+class MongoDbSink(Sink):
+
+    def __init__(self, host: str = "localhost", port: int = 27017, db_name: str = "gitlab"):
+        self.mongo_client = MongoClient(f'mongodb://{host}:{port}/')
+        self.mongo_db = mongo_client[db_name]
+
+    def sink(self, document: Dict, doc_type: str):
+        mongo_db[doc_type].insert_one(document)
+
+
+class ElasticSink(Sink):
+
+    def __init__(self, host: str = "localhost", port: int = 9200):
+        self.es_client = Elasticsearch(f"http://{host}:{port}")
+
+    def sink(self, document: Dict, doc_type: str):
+        self.es_client.index(index=doc_type, document=document)
 
 
 class ExportRepository:
@@ -42,10 +71,10 @@ class ExportRepository:
 # https://refactoring.guru/design-patterns/visitor
 class GetJobsAndTraces:
 
-    def __init__(self, latest_job_per_project: {}, trace_size_limit: int, outputs):
+    def __init__(self, latest_job_per_project: {}, trace_size_limit: int, sinks: [Sink]):
         self.latest_job_per_project = latest_job_per_project
         self.trace_size_limit = trace_size_limit
-        self.outputs = outputs
+        self.sinks = sinks
 
     def process(self, project):
         if project.id in self.latest_job_per_project:
@@ -69,8 +98,8 @@ class GetJobsAndTraces:
         if self.trace_exists_and_does_not_exceed_size_limit(job):
             job_as_dict = self.add_trace(job)
 
-        for opt in self.outputs:
-            opt(job_as_dict.copy(), "jobs")
+        for sink in self.sinks:
+            sink.sink(job_as_dict.copy(), "jobs")
 
     def add_trace(self, job_as_dict, job):
         job_as_dict["trace"] = job.trace().decode("utf-8")
@@ -124,20 +153,14 @@ def get_latest_job_date_per_project(mongo_db):
 if __name__ == '__main__':
     mongo_client = MongoClient('mongodb://localhost:27017/')
     mongo_db = mongo_client['gitlab']
-    es_client = Elasticsearch("http://localhost:9200")
     latest_job_per_project = get_latest_job_date_per_project(mongo_db)
 
-    def elastic_output(obj_as_json, type):
-        es_client.index(index=type, document=obj_as_json)
-
-    def mongo_output(obj_as_json, type):
-        mongo_db[type].insert_one(obj_as_json)
-
-    stdout_output = lambda obj_as_json, type: print(json.dumps(obj_as_json, indent=2))  # noqa
+    stdout_sink = type('StdOutSink', (Sink, object), {"sink": lambda document, doc_type: print(
+                                                              json.dumps(document, indent=2))})
 
     get_jobs_and_traces = GetJobsAndTraces(latest_job_per_project=latest_job_per_project,
                                            trace_size_limit=10000,
-                                           outputs=[stdout_output, mongo_output, elastic_output])
+                                           sinks=[stdout_sink, MongoDbSink(), ElasticSink()])
     repository_exporter = ExportRepository(repository_size_limit=1000000)
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
