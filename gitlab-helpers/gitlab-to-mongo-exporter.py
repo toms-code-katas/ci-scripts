@@ -48,7 +48,6 @@ class GetJobsAndTraces:
         self.outputs = outputs
 
     def process(self, project):
-        updated_after = None
         if project.id in self.latest_job_per_project:
             updated_after = self.latest_job_per_project[project.id]
         else:
