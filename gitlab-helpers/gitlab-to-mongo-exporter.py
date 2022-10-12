@@ -29,7 +29,7 @@ class Sink(ABC):
         pass
 
     @abc.abstractmethod
-    def date_of_latest_document(self, doc_type: str, date_field_name: str = "finished_at"):
+    def date_of_latest_document(self, doc_type: str, date_field_name: str = "created_at"):
         pass
 
 
@@ -45,8 +45,8 @@ class MongoDbSink(Sink):
     def already_added(self, document: Dict, doc_type: str) -> bool:
         return self.mongo_db["jobs"].find_one({"id": document["id"]}) is not None
 
-    def date_of_latest_document(self, doc_type: str, date_field_name: str = "finished_at"):
-        # db.jobs.find({ "finished_at": { $ne: null } }).sort({finished_at:-1}).limit(1)
+    def date_of_latest_document(self, doc_type: str, date_field_name: str = "created_at"):
+        # db.jobs.find({ "created_at": { $ne: null } }).sort({created_at:-1}).limit(1)
         latest = self.mongo_db["jobs"].find(filter={date_field_name: {"$ne": "null"}},
                                             sort=[(date_field_name, -1)], limit=1,
                                             projection=[date_field_name]).next()
@@ -57,7 +57,7 @@ class MongoDbSink(Sink):
 
 class ElasticSink(Sink):
 
-    def date_of_latest_document(self, doc_type: str, date_field_name: str = "finished_at"):
+    def date_of_latest_document(self, doc_type: str, date_field_name: str = "created_at"):
         result = self.es_client.search(index=doc_type, query={"match_all": {}},
                                        sort=[{date_field_name: {"order": "desc"}}], size=1)
         hits = result.body["hits"]["hits"]
@@ -113,16 +113,16 @@ class GetJobsAndTraces:
     def __init__(self, trace_size_limit: int, sinks: [Sink]):
         self.trace_size_limit = trace_size_limit
         self.sinks = sinks
-        self.finished_after = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
+        self.created_after = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
             weeks=1)
         self.determine_latest_job_date()
 
     def process(self, project):
         new_jobs = 0
-        for pipeline in project.pipelines.list(updated_after=self.finished_after, get_all=True):
+        for pipeline in project.pipelines.list(updated_after=self.created_after, get_all=True):
             for pipeline_job in pipeline.jobs.list(get_all=True):
-                if pipeline_job.finished_at and get_time(
-                        pipeline_job.finished_at) > self.finished_after:
+                if pipeline_job.created_at and get_time(
+                        pipeline_job.created_at) > self.created_after:
                     job = project.jobs.get(pipeline_job.id)
                     self.output_job_and_trace(job)
                     new_jobs += 1
@@ -131,9 +131,9 @@ class GetJobsAndTraces:
 
     def determine_latest_job_date(self):
         for sink in self.sinks:
-            latest_date_from_sink = sink.date_of_latest_document("jobs", "finished_at")
-            if latest_date_from_sink and latest_date_from_sink > self.finished_after:
-                self.finished_after = latest_date_from_sink
+            latest_date_from_sink = sink.date_of_latest_document("jobs", "created_at")
+            if latest_date_from_sink and latest_date_from_sink > self.created_after:
+                self.created_after = latest_date_from_sink
 
     def output_job_and_trace(self, job):
         job_as_dict = job.asdict()
