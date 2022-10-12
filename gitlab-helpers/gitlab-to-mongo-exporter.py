@@ -19,6 +19,10 @@ class Sink(ABC):
     def sink(self, document: Dict, doc_type: str):
         pass
 
+    @abc.abstractmethod
+    def already_added(self, document: Dict, doc_type: str) -> bool:
+        pass
+
 
 class MongoDbSink(Sink):
 
@@ -29,6 +33,9 @@ class MongoDbSink(Sink):
     def sink(self, document: Dict, doc_type: str):
         mongo_db[doc_type].insert_one(document)
 
+    def already_added(self, document: Dict, doc_type: str) -> bool:
+        return self.mongo_db["jobs"].find_one({"id": document["id"]}) is not None
+
 
 class ElasticSink(Sink):
 
@@ -37,6 +44,12 @@ class ElasticSink(Sink):
 
     def sink(self, document: Dict, doc_type: str):
         self.es_client.index(index=doc_type, document=document)
+
+    def already_added(self, document: Dict, doc_type: str) -> bool:
+        hits = \
+            self.es_client.search(index=doc_type, query={"term": {"id": document["id"]}})["hits"][
+                "total"]["value"]
+        return hits > 0
 
 
 class ExportRepository:
@@ -96,10 +109,12 @@ class GetJobsAndTraces:
     def output_job_and_trace(self, job):
         job_as_dict = job.asdict()
         if self.trace_exists_and_does_not_exceed_size_limit(job):
-            job_as_dict = self.add_trace(job)
+            job_as_dict = self.add_trace(job_as_dict, job)
 
         for sink in self.sinks:
-            sink.sink(job_as_dict.copy(), "jobs")
+            document = job_as_dict.copy()
+            if not sink.already_added(document, "jobs"):
+                sink.sink(document, "jobs")
 
     def add_trace(self, job_as_dict, job):
         job_as_dict["trace"] = job.trace().decode("utf-8")
@@ -154,13 +169,16 @@ if __name__ == '__main__':
     mongo_client = MongoClient('mongodb://localhost:27017/')
     mongo_db = mongo_client['gitlab']
     latest_job_per_project = get_latest_job_date_per_project(mongo_db)
+    latest_job_per_project = {}
 
     stdout_sink = type('StdOutSink', (Sink, object), {"sink": lambda document, doc_type: print(
-                                                              json.dumps(document, indent=2))})
+        json.dumps(document, indent=2)),
+                                                      "already_added": lambda document, doc_type:
+                                                      False})
 
     get_jobs_and_traces = GetJobsAndTraces(latest_job_per_project=latest_job_per_project,
                                            trace_size_limit=10000,
-                                           sinks=[stdout_sink, MongoDbSink(), ElasticSink()])
+                                           sinks=[stdout_sink, ElasticSink()])
     repository_exporter = ExportRepository(repository_size_limit=1000000)
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
