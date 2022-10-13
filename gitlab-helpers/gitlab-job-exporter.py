@@ -16,7 +16,8 @@ from typing import Dict
 
 logging.basicConfig(
     level=logging.DEBUG,
-    format='{"timestamp": "%(asctime)s", "level": "%(levelname)s", "module": "%(name)s", "function": "%(funcName)s:%(lineno)d", "message": "%(message)s"}',
+    format='{"timestamp": "%(asctime)s", "level": "%(levelname)s", "module": "%(name)s",'
+           ' "function": "%(funcName)s:%(lineno)d", "message": "%(message)s"}',
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 
