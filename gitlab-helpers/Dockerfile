@@ -1,9 +1,11 @@
-FROM python:3-slim-buster
+FROM python:3-alpine
 
 WORKDIR /app
 
+RUN apk update && apk add mongodb-tools
+
 RUN pip3 install pymongo python-gitlab
 
-COPY ./gitlab-trace-to-mongo.py .
+COPY ./gitlab_trace_to_mongo.py .
 
-CMD [ "python3", "gitlab-trace-to-mongo.py"]
+CMD [ "python3", "gitlab_trace_to_mongo.py"]
