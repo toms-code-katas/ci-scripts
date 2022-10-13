@@ -10,7 +10,7 @@ if __name__ == '__main__':
     gitlab_url = os.getenv(
         f"{os.getenv('CI_SERVER_PROTOCOL', 'https')}://{os.getenv('CI_SERVER_HOST', 'gitlab.com')}:"
         f"{os.getenv('CI_SERVER_PORT', '443')}")
-    private_token = os.getenv("CI_JOB_TOKEN")
+    private_token = os.getenv("GITLAB_TOKEN", os.getenv("CI_JOB_TOKEN"))
     project_id = os.getenv("CI_PROJECT_ID")
     pipeline_id = os.getenv("CI_PIPELINE_ID")
     trace_size_limit = os.getenv("TRACE_SIZE_LIMIT", 1000000)
