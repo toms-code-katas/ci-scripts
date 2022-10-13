@@ -33,5 +33,5 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
-            ghcr.io/user/app:latest
-            ghcr.io/user/app:${{ github.sha }}
+            ghcr.io/toms-code-katas/gitlab-helpers/gitlab-trace-to-mongo:${{ github.sha }}
+            ghcr.io/toms-code-katas/gitlab-helpers/gitlab-trace-to-mongo:latest
