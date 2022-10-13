@@ -1,9 +1,11 @@
+"""
+A simple script that exports a GitLab pipeline its jobs and traces (API objects) to a mongo db.
+"""
 import os
 from gitlab import Gitlab
 from pymongo import MongoClient
 
 if __name__ == '__main__':
-
     mongo_client = MongoClient(f"mongodb://{os.getenv('MONGO_DB_HOST', 'mongodb')}:27017/")
     mongo_db = mongo_client["gitlab"]
 
@@ -13,7 +15,7 @@ if __name__ == '__main__':
     private_token = os.getenv("GITLAB_TOKEN", os.getenv("CI_JOB_TOKEN"))
     project_id = os.getenv("CI_PROJECT_ID")
     pipeline_id = os.getenv("CI_PIPELINE_ID")
-    trace_size_limit = os.getenv("TRACE_SIZE_LIMIT", 1000000)
+    trace_size_limit = os.getenv("TRACE_SIZE_LIMIT", "1000000")
 
     gitlab = Gitlab(url=gitlab_url, private_token=private_token)
 
