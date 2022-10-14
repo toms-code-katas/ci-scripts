@@ -26,7 +26,6 @@ if __name__ == '__main__':
     print(f"Collecting jobs and trace logs for pipeline {pipeline.id} of project {project.id}")
     for pipeline_job in pipeline.jobs.list(get_all=True):
         complete_job = project.jobs.get(pipeline_job.id)
-        print(f"Found job {complete_job.id}")
         job_as_dict = complete_job.asdict()
 
         for artifact in complete_job.attributes["artifacts"]:
@@ -35,9 +34,7 @@ if __name__ == '__main__':
 
         collected_jobs.append(job_as_dict)
 
-    print(f"Found {len(collected_jobs)} jobs for pipeline {pipeline.id}")
+    print(f"Found {len(collected_jobs)} jobs and traces for pipeline {pipeline.id}")
     pipeline_as_dict = pipeline.asdict()
     pipeline_as_dict["jobs"] = collected_jobs
     mongo_db["pipelines"].insert_one(pipeline_as_dict)
-    result = mongo_db["pipelines"].find_one({"id": pipeline.id})
-    print(result)
