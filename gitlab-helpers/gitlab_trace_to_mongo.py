@@ -39,3 +39,5 @@ if __name__ == '__main__':
     pipeline_as_dict = pipeline.asdict()
     pipeline_as_dict["jobs"] = collected_jobs
     mongo_db["pipelines"].insert_one(pipeline_as_dict)
+    result = mongo_db["pipelines"].find_one({"id": pipeline.id})
+    print(result)
