@@ -21,7 +21,7 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 
-logger = logging.getLogger('gitlab-issue-exporter')
+logger = logging.getLogger('gitlab-job-exporter')
 logging.getLogger('urllib3').setLevel("WARNING")
 logging.getLogger('elastic_transport').setLevel("WARNING")
 
@@ -146,31 +146,38 @@ class ExportRepository:
 
 # Visitor pattern
 # https://refactoring.guru/design-patterns/visitor
-class GetJobsAndTraces:
+class GetPipelineJobsAndTraces:
 
     def __init__(self, trace_size_limit: int, sinks: [Sink]):
         self.trace_size_limit = trace_size_limit
         self.sinks = sinks
         self.created_after = datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(
-            weeks=1)
-        self.determine_latest_job_date()
+            weeks=52)
+        self.determine_latest_pipeline_date()
 
     def process(self, project):
-        jobs_found = 0
+        pipelines_found = 0
         for pipeline in project.pipelines.list(updated_after=self.created_after, get_all=True):
+            if pipeline.created_at and get_time(
+                    pipeline.created_at) <= self.created_after:
+                continue
+            pipeline_as_dict = pipeline.asdict()
+            pipeline_as_dict["jobs"] = []
+            jobs_found = 0
             for pipeline_job in pipeline.jobs.list(get_all=True):
-                if pipeline_job.created_at and get_time(
-                        pipeline_job.created_at) > self.created_after:
-                    job = project.jobs.get(pipeline_job.id)
-                    self.output_job_and_trace(job)
-                    jobs_found += 1
+                job = project.jobs.get(pipeline_job.id)
+                pipeline_as_dict["jobs"].append(self.add_trace(job.asdict(), job))
+                jobs_found += 1
+            logger.debug(f"Found {jobs_found} jobs for pipeline \"{pipeline.id}\"")
+            pipelines_found += 1
+            for sink in self.sinks:
+                sink.sink(pipeline_as_dict, "pipelines")
+        logger.debug(f"Found {pipelines_found} pipelines for project {project.name}")
 
-        logger.debug(f"Found {jobs_found} jobs for project \"{project.name}\"")
-
-    def determine_latest_job_date(self):
+    def determine_latest_pipeline_date(self):
         latest_date_from_sinks = []
         for sink in self.sinks:
-            latest_date_from_sinks.append(sink.date_of_latest_document("jobs", "created_at"))
+            latest_date_from_sinks.append(sink.date_of_latest_document("pipeline", "created_at"))
 
         applicable_date = None
         for latest_date in latest_date_from_sinks:
@@ -183,18 +190,14 @@ class GetJobsAndTraces:
             elif latest_date < applicable_date:
                 applicable_date = latest_date
 
-        logger.debug(f"Determined latest job date to {applicable_date}")
+        logger.debug(f"Determined latest pipeline date to {applicable_date}")
         self.created_after = applicable_date
 
-    def output_job_and_trace(self, job):
+    def and_trace(self, job):
         job_as_dict = job.asdict()
         if self.trace_exists_and_does_not_exceed_size_limit(job):
             job_as_dict = self.add_trace(job_as_dict, job)
-
-        for sink in self.sinks:
-            document = job_as_dict.copy()
-            if not sink.already_added(document, "jobs"):
-                sink.sink(document, "jobs")
+        return job_as_dict
 
     def add_trace(self, job_as_dict, job):
         job_as_dict["trace"] = job.trace().decode("utf-8")
@@ -248,10 +251,14 @@ if __name__ == '__main__':
     stdout_sink = type('StdOutSink', (Sink, object), {"sink": lambda document, doc_type: print(
         json.dumps(document, indent=2)),
                                                       "already_added": lambda document, doc_type:
-                                                      False})
+                                                      False,
+                                                      "date_of_latest_document": lambda doc_type, date_field_name: datetime.datetime.now(tz=datetime.timezone.utc) - datetime.timedelta(weeks=52)}
 
-    get_jobs_and_traces = GetJobsAndTraces(trace_size_limit=10000,
-                                           sinks=[MongoDbSink(), ElasticSink()])
+        )
+
+    get_jobs_and_traces = GetPipelineJobsAndTraces(trace_size_limit=10000,
+                                                   # sinks=[MongoDbSink(), ElasticSink()])
+                                                   sinks=[stdout_sink, MongoDbSink()])
     repository_exporter = ExportRepository(repository_size_limit=1000000)
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
