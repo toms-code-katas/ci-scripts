@@ -1,18 +1,17 @@
 import abc
 import datetime
 import json
-
-import gitlab
 import logging
 import os
 import sys
-import tempfile
-import time
 
 from abc import ABC
+from typing import Dict
+
+import gitlab
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
-from typing import Dict
+
 
 logging.basicConfig(
     level=logging.DEBUG,
