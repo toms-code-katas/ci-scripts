@@ -1,3 +1,5 @@
+# pylint: disable=C0114,C0115,C0116
+
 import abc
 import datetime
 import json
@@ -11,7 +13,6 @@ from typing import Dict
 import gitlab
 from elasticsearch import Elasticsearch
 from pymongo import MongoClient
-
 
 logging.basicConfig(
     level=logging.DEBUG,
@@ -40,8 +41,9 @@ class Sink(ABC):
     def already_added(self, document: Dict, doc_type: str) -> bool:
         pass
 
+    # pylint: disable=R0201
     def date_of_latest_document(self, doc_type: str, date_field_name: str = "created_at"):
-        return datetime.datetime.now(tz=datetime.timezone.utc)
+        pass
 
 
 class MongoDbSink(Sink):
@@ -57,25 +59,25 @@ class MongoDbSink(Sink):
         found_document = self.mongo_db[doc_type].find_one({"id": document["id"]})
         if not found_document:
             logger.debug(
-                f"No document found with id \"{document['id']}\" in collection \"{doc_type}\"")
+                "No document found with id \"%s\" in collection \"%s\"", document['id'], doc_type)
             return False
-        else:
-            logger.debug(
-                f"Document found with id \"{document['id']}\" already added"
-                f" to collection \"{doc_type}\"")
-            return True
+
+        logger.debug(
+            "Document found with id \"%s\" already added"
+            " to collection \"%s\"", document['id'], doc_type)
+        return True
 
     def date_of_latest_document(self, doc_type: str, date_field_name: str = "created_at"):
         latest = next(self.mongo_db["jobs"].find(filter={date_field_name: {"$ne": "null"}},
                                                  sort=[(date_field_name, -1)], limit=1,
                                                  projection=[date_field_name]), None)
         if latest:
-            logger.debug(f"Latest \"{date_field_name}\" value is {latest[date_field_name]}")
+            logger.debug("Latest \"%s\" value is %s", date_field_name, date_field_name)
             return get_time(latest[date_field_name])
-        else:
-            logger.debug(
-                f"No value for field \"{date_field_name}\" found in collection \"{doc_type}\"")
-            return None
+
+        logger.debug(
+            "No value for field \"%s\" found in collection \"%s\"", date_field_name, doc_type)
+        return None
 
 
 class ElasticSink(Sink):
@@ -86,12 +88,12 @@ class ElasticSink(Sink):
         hits = result.body["hits"]["hits"]
         if hits:
             latest = hits[0]["_source"][date_field_name]
-            logger.debug(f"Latest \"{date_field_name}\" value is {latest}")
+            logger.debug("Latest \"%s\" value is %s", date_field_name, latest)
             return get_time(latest)
-        else:
-            logger.debug(
-                f"No value for field \"{date_field_name}\" found in index \"{doc_type}\"")
-            return None
+
+        logger.debug(
+            "No value for field \"%s\" found in index \"%s\"", date_field_name, doc_type)
+        return None
 
     def __init__(self, host: str = "localhost", port: int = 9200):
         self.es_client = Elasticsearch(f"http://{host}:{port}")
@@ -106,10 +108,11 @@ class ElasticSink(Sink):
         already_added = hits > 0
         if already_added:
             logger.debug(
-                f"Document found with id \"{document['id']}\" already added"
-                f" to index \"{doc_type}\"")
+                "Document found with id \"%s\" already added"
+                " to index \"%s\"", document['id'], doc_type)
         else:
-            logger.debug(f"No document found with id \"{document['id']}\" in index \"{doc_type}\"")
+            logger.debug("No document found with id \"%s\" in index \"%s\"", document['id'],
+                         doc_type)
 
         return already_added
 
@@ -136,13 +139,13 @@ class GetPipelineJobsAndTraces:
 
             self.add_jobs_and_traces(pipeline_jobs, pipeline_as_dict, project)
             logger.debug(
-                f"Found {len(pipeline_as_dict['jobs'])} jobs for pipeline "
-                f"\"{pipeline_as_dict['id']}\"")
+                "Found %s jobs for pipeline "
+                "\"%s\"", len(pipeline_as_dict['jobs']), pipeline_as_dict['id'])
 
             self.write_to_sinks(pipeline_as_dict)
             pipelines_found += 1
 
-        logger.debug(f"Found {pipelines_found} pipelines for project {project.name}")
+        logger.debug("Found %s pipelines for project %s", pipelines_found, project.name)
 
     def write_to_sinks(self, pipeline_as_dict):
         for sink in self.sinks:
@@ -156,7 +159,8 @@ class GetPipelineJobsAndTraces:
     def is_pipeline_new(self, pipeline):
         return pipeline.created_at and get_time(pipeline.created_at) > self.created_after
 
-    def convert_to_dict(self, pipeline):
+    @staticmethod
+    def convert_to_dict(pipeline):
         pipeline_as_dict = pipeline.asdict()
         pipeline_as_dict["jobs"] = []
         return pipeline_as_dict
@@ -172,12 +176,13 @@ class GetPipelineJobsAndTraces:
                 logger.debug("At least one sink did not provided a latest job date, using default")
                 applicable_date = self.created_after
                 break
-            elif not applicable_date:
+
+            if not applicable_date:
                 applicable_date = latest_date
             elif latest_date < applicable_date:
                 applicable_date = latest_date
 
-        logger.debug(f"Determined latest pipeline date to {applicable_date}")
+        logger.debug("Determined latest pipeline date to %s", applicable_date)
         self.created_after = applicable_date
 
     def add_trace(self, job):
@@ -215,7 +220,7 @@ if __name__ == '__main__':
     mongo_client = MongoClient('mongodb://localhost:27017/')
     mongo_db = mongo_client['gitlab']
 
-    stdout_sink = type('StdOutSink', (Sink, object), {"sink": lambda document, doc_type: print(
+    StdoutSink = type('StdOutSink', (Sink, object), {"sink": lambda document, doc_type: print(
         json.dumps(document, indent=2)),
                           "already_added": lambda document, doc_type:
                           False,
@@ -225,7 +230,7 @@ if __name__ == '__main__':
                               weeks=52)})
 
     get_jobs_and_traces = GetPipelineJobsAndTraces(trace_size_limit=10000,
-                                                   sinks=[stdout_sink, MongoDbSink()])
+                                                   sinks=[StdoutSink, MongoDbSink()])
 
     gl = gitlab.Gitlab(url='https://gitlab.com', private_token=os.getenv("GITLAB_TOKEN"))
     traverse_all_projects_in_group(os.getenv("GITLAB_GROUP_ID"), processors=[get_jobs_and_traces])
