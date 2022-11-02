@@ -222,12 +222,12 @@ if __name__ == '__main__':
 
     StdoutSink = type('StdOutSink', (Sink, object), {"sink": lambda document, doc_type: print(
         json.dumps(document, indent=2)),
-                          "already_added": lambda document, doc_type:
-                          False,
-                          "date_of_latest_document": lambda doc_type,
-                                                            date_field_name: datetime.datetime.now(
-                              tz=datetime.timezone.utc) - datetime.timedelta(
-                              weeks=52)})
+                                 "already_added": lambda document, doc_type:
+                                 False,
+                                 "date_of_latest_document": lambda doc_type,
+                                                                   df_name: datetime.datetime.now(
+                                     tz=datetime.timezone.utc) - datetime.timedelta(
+                                     weeks=52)})
 
     get_jobs_and_traces = GetPipelineJobsAndTraces(trace_size_limit=10000,
                                                    sinks=[StdoutSink, MongoDbSink()])
