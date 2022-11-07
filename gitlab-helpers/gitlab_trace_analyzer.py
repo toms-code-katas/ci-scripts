@@ -1,5 +1,6 @@
 # See https://www.tensorflow.org/tutorials/keras/text_classification
 import numpy as np
+import os
 import re
 import string
 
@@ -7,12 +8,13 @@ import tensorflow as tf
 from keras import layers, losses
 
 if __name__ == '__main__':
+
     tf.config.set_visible_devices([], 'GPU')
 
     batch_size = 32
     seed = 42
 
-    data_dir = '/tmp/data-ENZ6HK'
+    data_dir = '/tmp/trace-data-Bd4pvA/train'
     raw_train_ds = tf.keras.utils.text_dataset_from_directory(
         data_dir,
         batch_size=batch_size,
@@ -20,20 +22,19 @@ if __name__ == '__main__':
         subset='training',
         seed=seed)
 
-    for text_batch, label_batch in raw_train_ds.take(1):
-        for i in range(3):
-            print("Trace", text_batch.numpy()[i])
-            print("Label", label_batch.numpy()[i])
+    print("Label 0 corresponds to", raw_train_ds.class_names[0])
+    print("Label 1 corresponds to", raw_train_ds.class_names[1])
 
     raw_val_ds = tf.keras.utils.text_dataset_from_directory(
         data_dir,
         batch_size=batch_size,
         validation_split=0.2,
         subset='validation',
-        seed=seed)
+        seed=seed,
+        shuffle=False)
 
     raw_test_ds = tf.keras.utils.text_dataset_from_directory(
-        data_dir,
+        '/tmp/trace-data-Bd4pvA/test',
         batch_size=batch_size)
 
 
@@ -63,7 +64,7 @@ if __name__ == '__main__':
     first_trace, first_label = text_batch[0], label_batch[0]
     print("Trace", first_trace)
     print("Label", raw_train_ds.class_names[first_label])
-    print("Vectorized review", vectorize_text(first_trace, first_label))
+    print("Vectorized trace", vectorize_text(first_trace, first_label))
 
     print('Vocabulary size: {}'.format(len(vectorize_layer.get_vocabulary())))
 
@@ -113,11 +114,9 @@ if __name__ == '__main__':
     )
 
     from pathlib import Path
-    failure_test_trace = Path('/tmp/data-ENZ6HK/failed/3202596907.txt').read_text()
-    success_test_trace = Path('/tmp/data-ENZ6HK/success/3246658345.txt').read_text()
 
-    samples_to_predict = np.array(["", failure_test_trace, success_test_trace, "Job failed: exit code 1", "Job succeeded", "Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded Job succeeded"])
+    samples_to_predict = np.array(["success", "failed", "I Failed my vocabulary test", "Success is not an option"])
 
-    result = export_model.predict(samples_to_predict, verbose=2)
-    print(result)
-
+    predictions = export_model.predict(samples_to_predict, verbose=2)
+    test = (predictions > 0.5).astype('int32')
+    print(test)
