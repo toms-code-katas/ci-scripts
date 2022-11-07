@@ -4,17 +4,25 @@ import os
 import re
 import string
 
+from pathlib import Path
+
 import tensorflow as tf
 from keras import layers, losses
 
-if __name__ == '__main__':
 
-    tf.config.set_visible_devices([], 'GPU')
+def custom_standardization(input_data):
+    lowercase = tf.strings.lower(input_data)
+    return tf.strings.regex_replace(lowercase, '[%s]' % re.escape(string.punctuation), '')
 
+
+custom_objects = {"custom_standardization": custom_standardization}
+
+
+def create_model(model_path, train_data_folder, test_data_folder):
     batch_size = 32
     seed = 42
 
-    data_dir = '/tmp/trace-data-Bd4pvA/train'
+    data_dir = train_data_folder
     raw_train_ds = tf.keras.utils.text_dataset_from_directory(
         data_dir,
         batch_size=batch_size,
@@ -34,14 +42,8 @@ if __name__ == '__main__':
         shuffle=False)
 
     raw_test_ds = tf.keras.utils.text_dataset_from_directory(
-        '/tmp/trace-data-Bd4pvA/test',
+        test_data_folder,
         batch_size=batch_size)
-
-
-    def custom_standardization(input_data):
-        lowercase = tf.strings.lower(input_data)
-        return tf.strings.regex_replace(lowercase, '[%s]' % re.escape(string.punctuation), '')
-
 
     max_features = 10000
     sequence_length = 250
@@ -58,7 +60,6 @@ if __name__ == '__main__':
     def vectorize_text(text, label):
         text = tf.expand_dims(text, -1)
         return vectorize_layer(text), label
-
 
     text_batch, label_batch = next(iter(raw_train_ds))
     first_trace, first_label = text_batch[0], label_batch[0]
@@ -87,19 +88,12 @@ if __name__ == '__main__':
                   metrics=tf.metrics.BinaryAccuracy(threshold=0.0))
 
     epochs = 10
-    history = model.fit(
+    model.fit(
         train_ds,
         validation_data=val_ds,
         epochs=epochs)
 
-    export_model = tf.keras.Sequential([
-      vectorize_layer,
-      model,
-      layers.Activation('sigmoid')
-    ])
-
     loss, accuracy = model.evaluate(test_ds)
-
     print("Loss: ", loss)
     print("Accuracy: ", accuracy)
 
@@ -112,11 +106,22 @@ if __name__ == '__main__':
     export_model.compile(
         loss=losses.BinaryCrossentropy(from_logits=False), optimizer="adam", metrics=['accuracy']
     )
+    export_model.save(model_path)
 
-    from pathlib import Path
 
-    samples_to_predict = np.array(["success", "failed", "I Failed my vocabulary test", "Success is not an option"])
+if __name__ == '__main__':
+    tf.config.set_visible_devices([], 'GPU')
 
-    predictions = export_model.predict(samples_to_predict, verbose=2)
+    model_path = os.path.dirname(os.path.realpath(__file__)) + "/model/trace_model"
+    trace_model = None
+    if not os.path.isdir(model_path):
+        create_model(model_path, "/tmp/trace-data-Bd4pvA/train", "/tmp/trace-data-Bd4pvA/test")
+
+    trace_model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
+
+    samples_to_predict = np.array(
+        ["success", "failed", "I Failed my vocabulary test", "Success is not an option"])
+
+    predictions = trace_model.predict(samples_to_predict, verbose=2)
     test = (predictions > 0.5).astype('int32')
     print(test)
