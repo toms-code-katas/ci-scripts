@@ -1,4 +1,6 @@
 # See https://www.tensorflow.org/tutorials/keras/text_classification
+import sys
+
 import numpy as np
 import os
 import re
@@ -111,11 +113,11 @@ def create_model(model_path, train_data_folder, test_data_folder):
 
 if __name__ == '__main__':
     tf.config.set_visible_devices([], 'GPU')
-
     model_path = os.path.dirname(os.path.realpath(__file__)) + "/model/trace_model"
     trace_model = None
+    data_dir = sys.argv[1]
     if not os.path.isdir(model_path):
-        create_model(model_path, "/tmp/trace-data-Bd4pvA/train", "/tmp/trace-data-Bd4pvA/test")
+        create_model(model_path, data_dir + "/train", data_dir + "/test")
 
     trace_model = tf.keras.models.load_model(model_path, custom_objects=custom_objects)
 
