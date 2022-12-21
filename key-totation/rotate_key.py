@@ -111,9 +111,7 @@ def encrypt_secret(secret_file):
 def get_encrypted_files(secrets_folder):
     pattern = "(?:(?<=recipient=)|(?<=recipient: )).*"
     encrypted_files = []
-    files = (os.path.join(secrets_folder, file) for file in os.listdir(secrets_folder)
-             if os.path.isfile(os.path.join(secrets_folder, file)))
-    for file in files:
+    for file in glob.iglob(secrets_folder + '/**/*.*', recursive=True):
         with open(file) as file_content:
             for line in file_content:
                 match = re.search(pattern=pattern, string=line)
