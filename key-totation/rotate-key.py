@@ -2,6 +2,7 @@ import gitlab
 import glob
 from io import BytesIO
 import os
+import pexpect
 import re
 import subprocess
 import tempfile
@@ -38,13 +39,17 @@ def get_last_keys_from_artifacts(project, environment, number_of_keys=20):
 def decrypt_key(key, keyfile, password):
     with open(keyfile, "wb") as kf:
         kf.write(key)
-    output = subprocess.run(
-        [f"{os.getcwd()}/decrypt_key.sh", password, keyfile],
-        check=True, capture_output=True)
-    if "incorrect passphrase" in str(output.stdout) or "incorrect passphrase" in str(output.stderr):
-        return None
-    else:
-        return keyfile + ".txt"
+
+    age = pexpect.spawn(f"age -d {keyfile}")
+    age.expect('Enter.*')
+    age.sendline(password)
+    age.expect(r'# created\s*:\s*(.*)')
+    key_found = age.after
+
+    with open(keyfile + ".txt", "wb") as kf:
+        kf.write(key_found)
+
+    return keyfile + ".txt"
 
 
 def get_current_age_key_from_sops_config(sops_config_file_path):
@@ -90,7 +95,7 @@ def get_pub_key_from_key_file(key_file_path):
 
 
 def decrypt_secret(keyfile, secret_file):
-    env =  os.environ.copy()
+    env = os.environ.copy()
     env["SOPS_AGE_KEY_FILE"] = keyfile
     subprocess.run(
         [f"sops", "-d", "-i", secret_file], check=True, env=env)
@@ -105,7 +110,7 @@ def encrypt_secret(secret_file):
 
 def get_encrypted_files(secrets_folder):
     pattern = "(?:(?<=recipient=)|(?<=recipient: )).*"
-    encrypted_files=[]
+    encrypted_files = []
     files = (os.path.join(secrets_folder, file) for file in os.listdir(secrets_folder)
              if os.path.isfile(os.path.join(secrets_folder, file)))
     for file in files:
@@ -119,7 +124,6 @@ def get_encrypted_files(secrets_folder):
 
 
 def silent_remove(filenames):
-
     for filename in filenames:
         if not filename:
             continue
