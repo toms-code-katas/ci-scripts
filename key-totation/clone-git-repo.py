@@ -22,6 +22,7 @@ def clone_repo(repo_url, repo_name, user_name, user_password):
     clone_command = pexpect.spawn(f"git clone {repo_url} {repo_name}")
     clone_command.logfile_read = sys.stdout.buffer
     send_authentication(clone_command, user_name, user_password)
+    clone_command.expect("Resolving deltas: 100% \(\d+\/\d+\), done.")
     clone_command.expect(pexpect.EOF)
     logger.info(f"\033[1;92m\U00002714 Successfully cloned {repo_name}\033[0m")
 
