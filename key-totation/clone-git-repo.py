@@ -32,6 +32,7 @@ def init_submodules(repo_name, user_name, user_password):
     init_command = pexpect.spawn(f"git submodule update --init --recursive", cwd=repo_name)
     init_command.logfile_read = sys.stdout.buffer
     send_authentication(init_command, user_name, user_password)
+    init_command.expect("Submodule path '.*': checked out '.*'")
     init_command.expect(pexpect.EOF)
     logger.info(f"\033[1;92m\U00002714 Successfully initialized submodules\033[0m")
 
