@@ -1,5 +1,7 @@
 import logging
 import sys
+
+from datetime import datetime
 import pexpect
 
 logging.basicConfig(
@@ -23,8 +25,25 @@ def generate_new_key() -> str:
     return key
 
 
-def create_and_encrypt_new_key_file(password: str):
-    pass
+def create_and_encrypt_new_key_file(key:str, cluster, password: str):
+    key_file_name = datetime.now().strftime(f"identity.agekey.%Y-%m-%d-%H-%M.{cluster}")
+    with open(key_file_name, "w") as kf:
+        kf.write(key)
+    logger.info(f"\033[1;36mEncrypting key file {key_file_name}\033[0m")
+    age = pexpect.spawn(f"age -a -p {key_file_name}")
+    age.expect("Enter.*")
+    age.sendline(password)
+    age.expect("Confirm.*")
+    age.sendline(password)
+    age.expect("\r\n")
+    with open(key_file_name + ".enc", "wb") as kf:
+        kf.write(age.before)
+    age.expect(pexpect.EOF)
+    age.close()
+    assert age.exitstatus == 0, "Failed to encrypt key file"
+    logger.info(f"\033[1;92m\U00002714 Successfully encrypted key file {key_file_name}\033[0m")
+
+
 
 
 def get_secret_location(cluster: str) -> str:
@@ -43,6 +62,6 @@ if __name__ == '__main__':
     key_password = sys.argv[2]
 
     new_key = generate_new_key()
-    create_and_encrypt_new_key_file(new_key)
+    create_and_encrypt_new_key_file(new_key, cluster, key_password)
     k8s_secret_location = generate_k8s_secret(cluster, new_key)
     encrypt_k8s_secret(k8s_secret_location)
