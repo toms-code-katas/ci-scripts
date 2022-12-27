@@ -41,7 +41,6 @@ if __name__ == '__main__':
     logger.info(f"\033[1;36mCommitting {file}\033[0m")
     commit_command = pexpect.spawn(f"git commit -m '{commit_message}'")
     commit_command.logfile_read = sys.stdout.buffer
-    commit_command.expect(f".*{file}.*")
     commit_command.expect(pexpect.EOF)
     add_command.close()
     assert add_command.exitstatus == 0, f"Failed to commit file {file}"

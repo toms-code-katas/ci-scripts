@@ -10,6 +10,7 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+
 def send_authentication(expect_command, user_name, user_password):
     expect_command.expect("Username for ")
     expect_command.sendline(user_name)
