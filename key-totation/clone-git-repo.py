@@ -54,7 +54,11 @@ if __name__ == '__main__':
 
     user_name = sys.argv[2]
     user_password = sys.argv[3]
+    include_submodules = False
+    if len(sys.argv) > 4:
+        include_submodules = sys.argv[4]
 
     clone_repo(repo_url, repo_name, user_name, user_password)
-    init_submodules(repo_name, user_name, user_password)
+    if include_submodules:
+        init_submodules(repo_name, user_name, user_password)
     set_user(user_name, user_name, repo_name)
