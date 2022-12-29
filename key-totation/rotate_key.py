@@ -29,7 +29,7 @@ def get_last_keys_from_artifacts(project, environment, number_of_keys=20):
                         environment_age_keys_found.update(armoured_age_key)
                         keys_found = keys_found + 1
                         if keys_found == number_of_keys:
-                            print(f"Found {number_of_keys} eys for environment {artifact_environment}")
+                            print(f"Found {number_of_keys} keys for environment {artifact_environment}")
                             return environment_age_keys_found
                 except AttributeError:
                     pass
@@ -44,9 +44,12 @@ def decrypt_key(key, keyfile, password):
     age.expect('Enter.*')
     age.sendline(password)
     age.expect(r'# created\s*:\s*(.*)')
-    key_found = age.after
+    key_found = age.after.decode('utf-8')
 
-    with open(keyfile + ".txt", "wb") as kf:
+    # Remove empty lines
+    key_found = os.linesep.join([s for s in key_found.splitlines() if s])
+
+    with open(keyfile + ".txt", "wt") as kf:
         kf.write(key_found)
 
     return keyfile + ".txt"
