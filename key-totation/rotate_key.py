@@ -1,39 +1,57 @@
 import gitlab
 import glob
+import logging
 from io import BytesIO
 import os
 import pexpect
 import re
 import subprocess
+import sys
 import tempfile
 import zipfile
 import yaml
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
 
 
 def get_last_keys_from_artifacts(project, environment, number_of_keys=20):
     environment_age_keys_found = {}
     keys_found = 0
-    for pipeline in project.pipelines.list(get_all=False):
+    logger.info(f"\033[1;36mLooking for last {number_of_keys} age keys in {environment} environment\033[0m")
+    for pipeline in project.pipelines.list(get_all=True):
         for pipeline_job in pipeline.jobs.list(order_by="finished_at", scope='success', get_all=True):
             for artifact in pipeline_job.attributes["artifacts"]:
                 try:
                     artifact_environment = re.search("(?<=agekeys-).*(?=.zip)", artifact["filename"]).group(0)
                     if artifact_environment == environment:
-                        print(f"Found artifact for environment {artifact_environment}")
                         job = project.jobs.get(pipeline_job.id, lazy=True)
-                        output = BytesIO()
-                        job.artifacts(streamed=True, action=output.write)
-                        output.flush()
-                        zip = zipfile.ZipFile(output)
-                        armoured_age_key = {name: zip.read(name) for name in zip.namelist()}
-                        environment_age_keys_found.update(armoured_age_key)
+                        logger.info(
+                            f"\033[1;36mArtifact {artifact['filename']} of job {pipeline_job.id} is matching {environment} environment\033[0m")
+                        add_keys_from_zip(environment_age_keys_found, job)
                         keys_found = keys_found + 1
                         if keys_found == number_of_keys:
-                            print(f"Found {number_of_keys} keys for environment {artifact_environment}")
+                            logger.info(f"\033[1;36m{number_of_keys} keys collected for environment {environment}\033[0m")
                             return environment_age_keys_found
                 except AttributeError:
                     pass
+    logger.info(f"\033[1;36m{number_of_keys} keys collected for environment {environment}\033[0m")
     return environment_age_keys_found
+
+
+def add_keys_from_zip(environment_age_keys_found, job):
+    output = BytesIO()
+    job.artifacts(streamed=True, action=output.write)
+    output.flush()
+    zip = zipfile.ZipFile(output)
+    for name in zip.namelist():
+        logger.info(f"\033[1;36mFound zip file entry {name}\033[0m")
+        environment_age_keys_found.update({name: zip.read(name)})
 
 
 def decrypt_key(key, keyfile, password):
@@ -62,13 +80,19 @@ def get_current_age_key_from_sops_config(sops_config_file_path):
     current_age_key = None
     for creation_rule in sops_config["creation_rules"]:
         creation_rule_age_key = creation_rule["age"]
+        logger.info(f"\033[1;36mFound age key {creation_rule_age_key} for creation rule {creation_rule['path_regex']}\033[0m")
         if not current_age_key:
+            logger.info(f"\033[1;36mSetting current age key to {creation_rule_age_key}\033[0m")
             current_age_key = creation_rule_age_key
         elif current_age_key and creation_rule_age_key != current_age_key:
+            logger.error(f"\033[1;31mFound different age key {creation_rule_age_key} in sops config file\033[0m")
             raise Exception("Creation rules with different keys detected")
 
     if not current_age_key:
+        logger.error(f"\033[1;31mNo age key found in sops config file\033[0m")
         raise Exception(f"No age keys found in sops configuration file {sops_config_file_path}")
+
+    logger.info(f"\033[1;92m\U00002714 Found current age key {current_age_key}\033[0m")
     return current_age_key
 
 
@@ -173,12 +197,14 @@ if __name__ == '__main__':
 
         cluster = os.getenv("CLUSTER")
         sops_config_file_path = f"{os.getenv('SECRETS_DIR')}/.sops.yaml"
+
+        logger.info(f"\033[1;36mLooking for current age key in sops config file {sops_config_file_path}\033[0m")
         current_configured_pub_key = get_current_age_key_from_sops_config(sops_config_file_path)
 
         gl = gitlab.Gitlab(url=os.getenv("CI_SERVER_URL"), private_token=os.getenv("PERSONAL_ACCESS_TOKEN"))
-
         project = gl.projects.get(id=os.getenv("CI_PROJECT_ID"))
 
+        logger.info(f"\033[1;36mLooking for last created private key for re-encryption\033[0m")
         cluster_keys_found = get_last_keys_from_artifacts(project, cluster)
         decrypted_old_key_file = get_key_file_for_pub_key(cluster_keys_found, current_configured_pub_key)
 
