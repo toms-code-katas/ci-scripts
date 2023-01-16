@@ -1,5 +1,17 @@
+import logging
 import sys
+import urllib3
 from kubernetes import client, config, utils
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
+
+urllib3.disable_warnings()
 
 def mem_fmt(num, suffix="Gi"):
     for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
@@ -8,7 +20,14 @@ def mem_fmt(num, suffix="Gi"):
         num /= 1024.0
     return f"{num:.1f}Yi{suffix}"
 
+def log_green(msg):
+    logger.info(f"\033[1;92m\U00002714 {msg}\033[0m")
 
+def log_cyan(msg):
+    logger.info(f"\033[1;36m{msg}\033[0m")
+
+def log_yellow(msg):
+    logger.info(f"\033[1;33m{msg}\033[0m")
 class DeploymentResourcesCalculator:
 
     def __init__(self, apps_v1_api, autoscaling_v1_api, namespace, deployment):
@@ -63,7 +82,7 @@ class DeploymentResourcesCalculator:
 
         max_replicas = self.deployment.spec.replicas
         if not max_replicas or max_replicas < 0.1:
-            print(f"Deployment {self.deployment_name} has no replicas set, using 1")
+            log_yellow(f"Deployment {self.deployment_name} has no replicas set, using 1")
             max_replicas = 1
         else:
             print(f"Deployment {self.deployment_name} has {max_replicas} replicas configured")
@@ -75,31 +94,36 @@ class DeploymentResourcesCalculator:
         else:
             total_limit = total_limit * max_replicas
 
-        print(f"Maximum resource consumption for resource {resource_type} for deployment {self.deployment_name} is {total_limit}")
+        log_cyan(f"Maximum resource consumption for resource {resource_type} for deployment {self.deployment_name} is {total_limit}")
 
         return total_limit
 
 
+if __name__ == "__main__":
+    if len(sys.argv) != 3:
+        print("Usage: calculate-limits.py <config-file-path> <namespace>")
+        sys.exit(1)
 
+    config_file_path = sys.argv[1]
+    namespace = sys.argv[2]
 
-# Configs can be set in Configuration class directly or using helper utility
-config.load_kube_config(sys.argv[1])
+    config.load_kube_config(config_file_path)
 
-apps_client = client.AppsV1Api()
-auto_scaling_client = client.AutoscalingV1Api()
+    apps_client = client.AppsV1Api()
+    auto_scaling_client = client.AutoscalingV1Api()
 
-deployments = apps_client.list_namespaced_deployment(sys.argv[2], watch=False)
+    deployments = apps_client.list_namespaced_deployment(namespace, watch=False)
 
-max_cpu_consumption = 0
-max_memory_consumption = 0
-for deployment in deployments.items:
-    print(f"Calculating limits for deployment {deployment.metadata.name}")
-    calculator = DeploymentResourcesCalculator(apps_client, auto_scaling_client, sys.argv[2], deployment)
-    max_cpu_consumption += calculator.calculate_total_limit("cpu")
-    max_memory_consumption += calculator.calculate_total_limit("memory")
+    max_cpu_consumption = 0
+    max_memory_consumption = 0
+    for deployment in deployments.items:
+        print(f"Calculating limits for deployment {deployment.metadata.name}")
+        calculator = DeploymentResourcesCalculator(apps_client, auto_scaling_client, sys.argv[2], deployment)
+        max_cpu_consumption += calculator.calculate_total_limit("cpu")
+        max_memory_consumption += calculator.calculate_total_limit("memory")
 
-# Format memory to Gi
-max_memory_consumption = max_memory_consumption / 1024 / 1024 / 1024
+    # Format memory to Gi
+    max_memory_consumption = max_memory_consumption / 1024 / 1024 / 1024
 
-print(f"Maximum CPU consumption for all deployments in namespace {sys.argv[2]} is {max_cpu_consumption} cores")
-print(f"Maximum memory consumption for all deployments in namespace {sys.argv[2]} is {mem_fmt(max_memory_consumption)}")
+    log_green(f"Maximum CPU consumption for all deployments in namespace {sys.argv[2]} is {max_cpu_consumption} cores")
+    log_green(f"Maximum memory consumption for all deployments in namespace {sys.argv[2]} is {mem_fmt(max_memory_consumption)}")
