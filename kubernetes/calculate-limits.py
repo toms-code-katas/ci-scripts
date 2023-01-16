@@ -13,6 +13,7 @@ logger = logging.getLogger(__name__)
 
 urllib3.disable_warnings()
 
+
 def mem_fmt(num, suffix="Gi"):
     for unit in ["", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"]:
         if abs(num) < 1024.0:
