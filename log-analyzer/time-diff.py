@@ -1,10 +1,10 @@
+# This script contains functions for calculating the time difference between two
+# timestamps in a log file.
 import json
 import re
 import sys
 from datetime import datetime
 
-# This script contains functions for calculating the time difference between two
-# timestamps in a log file.
 
 def calculate_time_diff(last_line, second_line):
     # Both lines are in json format, so we need to extract the timestamp from the
@@ -36,10 +36,7 @@ if __name__ == '__main__':
         for line in log_file:
             if re.search(message_regex, line):
                 first_line = line
-                # print(f'Found matching line: {line}')
-                # print(f'last_line: {last_line}')
                 time_diff = calculate_time_diff(last_line, first_line)
-                # print(f'Time difference: {time_diff}')
                 all_time_diffs.append(time_diff)
             last_line = line
 
@@ -53,5 +50,3 @@ if __name__ == '__main__':
     # Calculate the sum of all time differences and display it as a timedelta.
     sum_of_time_diffs = sum(all_time_diffs, datetime.min)
     print(f'Sum of time differences: {sum_of_time_diffs}')
-
-
