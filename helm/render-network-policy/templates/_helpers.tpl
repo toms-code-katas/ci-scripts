@@ -69,19 +69,19 @@ Create the name of the service account to use
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: 
-    name: {{ $component }}-network-policy
+  name: {{ $component }}-network-policy
 spec:
   podSelector:
     matchLabels:
-        app.kubernetes.io/name: {{ $component }}
+      app.kubernetes.io/name: {{ $component }}
   policyTypes:
   - Ingress
   - Egress
 {{- range $nwp_type, $nwp_blocks := . }}
 {{- if eq $nwp_type "egress" }}
-  egress: null
+  egress:
 {{- range $nwp_block := $nwp_blocks }}
-{{ include "render-network-policy.render-block" $nwp_block }}
+{{- include "render-network-policy.render-block" $nwp_block | nindent 4 }}
 {{- end }}
 {{- else if eq $nwp_type "ingress" }}
   ingress: null
@@ -93,5 +93,14 @@ spec:
 {{- end }}
 
 {{- define "render-network-policy.render-block" -}}
-# {{ print . }}
+{{- if hasKey . "ipBlocks" }}
+{{- range $ipBlock := get . "ipBlocks" -}}
+from:
+- ipBlock:
+    cidr: {{ get $ipBlock "cidr" }}
+ports:
+- port: {{ get $ipBlock "port" }}
+protocol:  {{ get $ipBlock "protocol" }}
+{{- end }}
+{{- end }}
 {{- end }}
