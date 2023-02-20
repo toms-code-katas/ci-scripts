@@ -100,12 +100,12 @@ spec:
     cidr: {{ get $ipBlock "cidr" }}
 ports:
 - port: {{ get $ipBlock "port" }}
-protocol: {{ get $ipBlock "protocol" }}
+  protocol: {{ get $ipBlock "protocol" }}
 {{- end -}}
 {{- end -}}
 {{- if hasKey .nwp_block "services" -}}
 {{- range $service := get .nwp_block "services" -}}
-{{ include (printf "%s" $service ) $root }}
+{{ include (printf "%s" $service ) (dict "root" $root) }}
 {{- end -}}
 {{- end -}}
 {{- if hasKey .nwp_block "pods" -}}
@@ -115,15 +115,14 @@ protocol: {{ get $ipBlock "protocol" }}
       app.kubernetes.io/name:  {{ get $pod "name" }}
 ports:
 - port: {{ get $pod "port" }}
-protocol: {{ get $pod "protocol" }}
+  protocol: {{ get $pod "protocol" }}
 {{- end -}}
 {{- end -}}
 {{- end -}}
 
 
 {{- define "test.database" -}}
-{{- $root := .root -}}
-# database
+{{- $root := .root }}
 - ipBlock:
     cidr: {{ $root.Values.test.db.ip }}/32
 ports:

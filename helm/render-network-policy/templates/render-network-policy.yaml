@@ -1,1 +1,1 @@
- {{- include "render-network-policy.render" (dict "policy_definition" (index .Values "network-policies") "root" $) }}
+ {{- include "render-network-policy.render" (dict "policy_definition" (index .Values "network-policies") "root" .) }}
