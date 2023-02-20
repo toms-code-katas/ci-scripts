@@ -81,26 +81,25 @@ spec:
 {{- if eq $nwp_type "egress" }}
   egress:
 {{- range $nwp_block := $nwp_blocks }}
-{{- include "render-network-policy.render-block" $nwp_block | nindent 4 }}
+  - to:
+{{- include "render-network-policy.render-block" $nwp_block | nindent 4 -}}
 {{- end }}
 {{- else if eq $nwp_type "ingress" }}
   ingress: null
 {{ end }}
 {{- end }}
-
 {{- end }}
 
 {{- end }}
 
 {{- define "render-network-policy.render-block" -}}
-{{- if hasKey . "ipBlocks" }}
+{{- if hasKey . "ipBlocks" -}}
 {{- range $ipBlock := get . "ipBlocks" -}}
-from:
 - ipBlock:
     cidr: {{ get $ipBlock "cidr" }}
 ports:
 - port: {{ get $ipBlock "port" }}
-protocol:  {{ get $ipBlock "protocol" }}
-{{- end }}
-{{- end }}
-{{- end }}
+protocol: {{ get $ipBlock "protocol" }}
+{{- end -}}
+{{- end -}}
+{{- end -}}
