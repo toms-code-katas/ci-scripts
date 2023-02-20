@@ -108,6 +108,16 @@ protocol: {{ get $ipBlock "protocol" }}
 {{ include (printf "%s" $service ) $root }}
 {{- end -}}
 {{- end -}}
+{{- if hasKey .nwp_block "pods" -}}
+{{- range $pod := get .nwp_block "pods" -}}
+- podSelector:
+    matchLabels:
+      app.kubernetes.io/name:  {{ get $pod "name" }}
+ports:
+- port: {{ get $pod "port" }}
+protocol: {{ get $pod "protocol" }}
+{{- end -}}
+{{- end -}}
 {{- end -}}
 
 
