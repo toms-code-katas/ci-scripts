@@ -63,9 +63,9 @@ Create the name of the service account to use
 
 {{- define "render-network-policy.render" -}}
 ---
+{{- $root := .root }}
 # Iterate over policy definitions
 {{- range  $component, $component_nwp :=.policy_definition }}
-
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: 
@@ -82,7 +82,7 @@ spec:
   egress:
 {{- range $nwp_block := $nwp_blocks }}
   - to:
-{{- include "render-network-policy.render-block" $nwp_block | nindent 4 -}}
+{{- include "render-network-policy.render-block" (dict "nwp_block" $nwp_block "root" $root) | nindent 4 -}}
 {{- end }}
 {{- else if eq $nwp_type "ingress" }}
   ingress: null
@@ -93,8 +93,9 @@ spec:
 {{- end }}
 
 {{- define "render-network-policy.render-block" -}}
-{{- if hasKey . "ipBlocks" -}}
-{{- range $ipBlock := get . "ipBlocks" -}}
+{{- $root := .root }}
+{{- if hasKey .nwp_block "ipBlocks" -}}
+{{- range $ipBlock := get .nwp_block "ipBlocks" -}}
 - ipBlock:
     cidr: {{ get $ipBlock "cidr" }}
 ports:
@@ -102,4 +103,20 @@ ports:
 protocol: {{ get $ipBlock "protocol" }}
 {{- end -}}
 {{- end -}}
+{{- if hasKey .nwp_block "services" -}}
+{{- range $service := get .nwp_block "services" -}}
+{{ include (printf "%s" $service ) $root }}
 {{- end -}}
+{{- end -}}
+{{- end -}}
+
+
+{{- define "test.database" -}}
+{{- $root := .root -}}
+# database
+- ipBlock:
+    cidr: {{ $root.Values.test.db.ip }}/32
+ports:
+- protocol: TCP
+  port: {{ $root.Values.test.db.port | default 5432 }}
+{{- end }}
