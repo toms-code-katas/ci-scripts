@@ -66,7 +66,6 @@ Create the name of the service account to use
 # Iterate over policy definitions
 {{- range  $component, $component_nwp :=.policy_definition }}
 
-
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata: 
@@ -78,9 +77,12 @@ spec:
   policyTypes:
   - Ingress
   - Egress
-{{- range $nwp_type := keys . }}
+{{- range $nwp_type, $nwp_blocks := . }}
 {{- if eq $nwp_type "egress" }}
   egress: null
+{{- range $nwp_block := $nwp_blocks }}
+{{ include "render-network-policy.render-block" $nwp_block }}
+{{- end }}
 {{- else if eq $nwp_type "ingress" }}
   ingress: null
 {{ end }}
@@ -88,4 +90,8 @@ spec:
 
 {{- end }}
 
+{{- end }}
+
+{{- define "render-network-policy.render-block" -}}
+# {{ print . }}
 {{- end }}
