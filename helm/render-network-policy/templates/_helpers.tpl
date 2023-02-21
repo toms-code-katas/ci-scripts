@@ -106,6 +106,17 @@ spec:
 {{- include (printf "%s" $service ) (dict "root" $root) | nindent 4 -}}
 {{- end }}
 {{- end }}
+{{- if hasKey .nwp_block "pods" -}}
+{{- range $pod := get .nwp_block "pods" }}
+  - to:
+    - podSelector:
+        matchLabels:
+          app.kubernetes.io/name: {{ get $pod "name" }}
+    ports:
+    - port: {{ get $pod "port" }}
+      protocol: {{ get $pod "protocol" }}
+{{ end }}
+{{ end }}
 {{- end }}
 
 
