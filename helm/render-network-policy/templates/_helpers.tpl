@@ -115,8 +115,19 @@ spec:
     ports:
     - port: {{ get $pod "port" }}
       protocol: {{ get $pod "protocol" }}
-{{ end }}
-{{ end }}
+{{- end }}
+{{- end }}
+{{- if hasKey .nwp_block "extras" }}
+{{- range $extra := get .nwp_block "extras" }}
+  - to:
+{{- range $index, $yaml_line := regexSplit "\n" (toYaml $extra) -1 }}
+{{- if eq $index 0 }}
+{{- else }}
+{{ print $yaml_line | indent 2 }}
+{{- end }}
+{{- end }}
+{{- end }}
+{{- end }}
 {{- end }}
 
 
