@@ -117,3 +117,12 @@ ports:
 - protocol: TCP
   port: {{ $root.Values.test.db.port | default 5432 }}
 {{- end -}}
+
+{{- define "test.server" -}}
+{{- $root := .root -}}
+  - ipBlock:
+      cidr: {{ $root.Values.test.server.ip }}/32
+ports:
+- protocol: TCP
+  port: {{ $root.Values.test.server.port | default 5432 }}
+{{- end -}}
