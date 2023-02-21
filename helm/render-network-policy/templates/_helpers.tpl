@@ -81,51 +81,39 @@ spec:
 {{- if eq $nwp_type "egress" }}
   egress:
 {{- range $nwp_block := $nwp_blocks }}
-  - to:
-{{- include "render-network-policy.render-block" (dict "nwp_block" $nwp_block "root" $root) | nindent 4 -}}
+{{- include "render-network-policy.render-block" (dict "nwp_block" $nwp_block "root" $root) -}}
 {{- end }}
-{{- else if eq $nwp_type "ingress" }}
-  ingress: null
 {{ end }}
-{{- end }}
-{{- end }}
+{{ end }}
+{{ end }}
+{{ end }}
 
-{{- end }}
-
-{{- define "render-network-policy.render-block" -}}
-{{- $root := .root }}
+{{ define "render-network-policy.render-block" -}}
+{{ $root := .root }}
 {{- if hasKey .nwp_block "ipBlocks" -}}
-{{- range $ipBlock := get .nwp_block "ipBlocks" -}}
-- ipBlock:
-    cidr: {{ get $ipBlock "cidr" }}
-ports:
-- port: {{ get $ipBlock "port" }}
-  protocol: {{ get $ipBlock "protocol" }}
-{{- end -}}
-{{- end -}}
-{{- if hasKey .nwp_block "services" -}}
-{{- range $service := get .nwp_block "services" -}}
-{{ include (printf "%s" $service ) (dict "root" $root) }}
-{{- end -}}
-{{- end -}}
-{{- if hasKey .nwp_block "pods" -}}
-{{- range $pod := get .nwp_block "pods" -}}
-- podSelector:
-    matchLabels:
-      app.kubernetes.io/name:  {{ get $pod "name" }}
-ports:
-- port: {{ get $pod "port" }}
-  protocol: {{ get $pod "protocol" }}
-{{- end -}}
-{{- end -}}
-{{- end -}}
+{{- range $ipBlock := get .nwp_block "ipBlocks" }}
+  - to:
+      - ipBlock:
+          cidr: {{ get $ipBlock "cidr" }}
+    ports:
+      - port: {{ get $ipBlock "port" }}
+        protocol: {{ get $ipBlock "protocol" }}
+{{- end }}
+{{- end }}
+{{- if hasKey .nwp_block "services" }}
+{{- range $service := get .nwp_block "services" }}
+  - to:
+{{- include (printf "%s" $service ) (dict "root" $root) | nindent 4 -}}
+{{- end }}
+{{- end }}
+{{- end }}
 
 
 {{- define "test.database" -}}
-{{- $root := .root }}
-- ipBlock:
-    cidr: {{ $root.Values.test.db.ip }}/32
+{{- $root := .root -}}
+  - ipBlock:
+      cidr: {{ $root.Values.test.db.ip }}/32
 ports:
 - protocol: TCP
   port: {{ $root.Values.test.db.port | default 5432 }}
-{{- end }}
+{{- end -}}
