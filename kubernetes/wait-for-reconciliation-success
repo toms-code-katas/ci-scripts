@@ -1,0 +1,241 @@
+#!/usr/bin/env python3
+
+from datetime import datetime
+import json
+import logging
+import os
+import sys
+import time
+import urllib3
+import kubernetes.config as config
+import kubernetes.client as client
+
+
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(message)s',
+    handlers=[logging.StreamHandler(sys.stdout)]
+)
+
+logger = logging.getLogger(__name__)
+urllib3.disable_warnings()
+
+
+# This method prepends the current time to the log message
+def prepend_time(msg):
+    current_time = time.strftime("%H:%M:%S", time.localtime())
+    return f"{current_time} {msg}"
+
+def log_green(msg):
+    logger.info(f"\033[1;92m\U00002714 {prepend_time(msg)}\033[0m")
+
+def log_cyan(msg):
+    logger.info(f"\033[1;36m{prepend_time(msg)}\033[0m")
+
+def log_yellow(msg):
+    logger.info(f"\033[1;33m{prepend_time(msg)}\033[0m")
+
+def log_red(msg):
+    logger.info(f"\033[1;31m\U0000274C {prepend_time(msg)}\033[0m")
+
+
+# This method gets a flux git repository by its name in a specific namespace using the python kubernetes client.
+def get_flux_git_repository(kubernetes_client, git_repository_name, namespace):
+    # Get the flux git repository
+    flux_git_repository = kubernetes_client.get_namespaced_custom_object(
+        group="source.toolkit.fluxcd.io",
+        version="v1beta2",
+        namespace=namespace,
+        plural="gitrepositories",
+        name=git_repository_name
+    )
+
+    return flux_git_repository
+
+# The following method gets the "revision" of a flux git repository.
+# This is the commit hash of the latest commit.
+def get_flux_git_repository_revision(flux_git_repository):
+    # Get the revision
+    revision = flux_git_repository["status"]["artifact"]["revision"]
+    return revision
+
+# This method gets a flux kustomization by its name in a specific namespace using the python kubernetes client.
+def get_flux_kustomization(kubernetes_client, kustomization_name, namespace):
+    # Get the flux kustomization
+    flux_kustomization = kubernetes_client.get_namespaced_custom_object(
+        group="kustomize.toolkit.fluxcd.io",
+        version="v1beta2",
+        namespace=namespace,
+        plural="kustomizations",
+        name=kustomization_name
+    )
+
+    return flux_kustomization
+
+
+# This method retreives the "lastAppliedRevision" from a flux kustomization.
+def get_flux_kustomization_last_applied_revision(flux_kustomization):
+    # Get the last applied revision
+    last_applied_revision = flux_kustomization["status"]["lastAppliedRevision"]
+    return last_applied_revision
+
+# This method gets a helm release by its name in a specific namespace using the python kubernetes client.
+def get_helm_release(kubernetes_client, helm_release_name, namespace):
+    # Get the helm release
+    helm_release = kubernetes_client.get_namespaced_custom_object(
+        group="helm.toolkit.fluxcd.io",
+        version="v2beta1",
+        namespace=namespace,
+        plural="helmreleases",
+        name=helm_release_name
+    )
+
+    return helm_release
+
+# This method iterates of the conditions of a helm release and returns true if one of reasons is "ReconciliationSucceeded"
+# and the other is "UpgradeSucceeded". If an optional version is provided, it also checks if the version of the helm release
+# matches the provided version.
+def is_helm_release_reconciled(helm_release, version=None):
+    # Get the conditions of the helm release
+    conditions = helm_release["status"]["conditions"]
+
+    # Check if the conditions are present
+    if not conditions:
+        return False
+
+    # Check if the conditions contain a "ReconciliationSucceeded" and a "UpgradeSucceeded" reason
+    reconciliation_succeeded = False
+    upgrade_succeeded = False
+    for condition in conditions:
+        if condition["reason"] == "ReconciliationSucceeded":
+            reconciliation_succeeded = True
+        elif condition["reason"] == "UpgradeSucceeded":
+            upgrade_succeeded = True
+
+    # Check if the version of the helm release matches the provided version
+    if version:
+        helm_release_version = helm_release["status"]["lastAppliedRevision"]
+        if helm_release_version != version:
+            return False
+
+    # Check if the conditions contain a "ReconciliationSucceeded" and a "UpgradeSucceeded" reason
+    if reconciliation_succeeded and upgrade_succeeded:
+        log_green(f"Version {version} of the helm release {helm_release['metadata']['name']} has been reconciled")
+        return True
+    else:
+        status = json.dumps(helm_release["status"], indent=4, sort_keys=True)
+        log_yellow(f"The helm release {helm_release['metadata']['name']} has not been reconciled yet. Status: {status}")
+        return False
+
+# This method loops until the helm release is reconciled. The loop continues for 2 minutes and then exits with an error
+# if the helm release is not reconciled.
+def wait_for_helm_release_to_be_reconciled(kubernetes_client, helm_release_name, namespace, version=None):
+    # Loop until the helm release is reconciled
+    start_time = datetime.now()
+    while True:
+        # Get the helm release
+        helm_release = get_helm_release(kubernetes_client, helm_release_name, namespace)
+
+        # Check if the helm release is reconciled
+        if is_helm_release_reconciled(helm_release, version):
+            break
+
+        # Check if the loop has been running for more than 2 minutes
+        if (datetime.now() - start_time).seconds > 120:
+            log_red(f"The helm release {helm_release_name} in namespace {namespace} was not reconciled in time")
+        return False
+
+        # Wait 5 seconds before checking again
+        time.sleep(5)
+
+    return True
+
+# This method loops until the "lastAppliedRevision" of a flux kustomization and the "revision" of the flux git repository
+# match a specific revision. This means that both the flux git repository and the flux kustomization have been updated
+# The loop continues for 2 minutes and then exits with an error if the revisions do not match.
+def wait_for_flux_git_repository_and_kustomization_to_be_updated(kubernetes_client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, revision):
+    # Loop until the flux git repository and the flux kustomization have been updated
+    start_time = datetime.now()
+    while True:
+        # Get the flux git repository
+        flux_git_repository = get_flux_git_repository(kubernetes_client, git_repository_name, git_repository_namespace)
+
+        # Get the flux kustomization
+        flux_kustomization = get_flux_kustomization(kubernetes_client, kustomization_name, kustomization_namespace)
+
+        # Get the revision of the flux git repository
+        flux_git_repository_revision = get_flux_git_repository_revision(flux_git_repository)
+
+        # Get the last applied revision of the flux kustomization
+        flux_kustomization_last_applied_revision = get_flux_kustomization_last_applied_revision(flux_kustomization)
+
+        # Check if the flux git repository and the flux kustomization have been updated
+        if flux_git_repository_revision == revision and flux_kustomization_last_applied_revision == revision:
+            log_green("Flux git repository and kustomization have been updated")
+            break
+        else:
+            log_yellow(f"Flux git repository revision {flux_git_repository_revision} and kustomization applied version {flux_kustomization_last_applied_revision} do not match {revision}")
+
+        # Check if the loop has been running for more than 2 minutes
+        if (datetime.now() - start_time).seconds > 120:
+            log_red("Flux git repository and kustomization have not been updated in time")
+            return False
+
+        # Wait 5 seconds and then check again
+        time.sleep(5)
+    return True
+
+# This method first waits for the "lastAppliedRevision" of a flux kustomization and the "revision" of the flux git repository
+# to match a specific revision. This means that both the flux git repository and the flux kustomization have been updated.
+# Then it waits for the helm release to be reconciled.
+def wait_for_flux_git_repository_kustomization_and_helm_release_to_be_updated(kubernetes_client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, helm_release_name, helm_release_namespace, revision, version=None):
+    # Wait for the flux git repository and kustomization to be updated
+    if not wait_for_flux_git_repository_and_kustomization_to_be_updated(kubernetes_client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, revision):
+        return False
+
+    # Wait for the helm release to be reconciled
+    if not wait_for_helm_release_to_be_reconciled(kubernetes_client, helm_release_name, helm_release_namespace, version):
+        return False
+
+    return True
+
+
+if __name__ == "__main__":
+    # The first parameter is the name of the helm release
+    # The second parameter is the namespace of the helm release
+    # The third parameter is the name of the flux git repository
+    # The fourth parameter is the namespace of the flux git repository
+    # The fifth parameter is the name of the flux kustomization
+    # The sixth parameter is the namespace of the flux kustomization
+    # The seventh parameter is the revision of the flux git repository
+    # The eighth parameter is the version of the helm release (optional)
+    if len(sys.argv) < 7:
+        log_red("Not enough arguments provided")
+        print("Usage: wait-for-helm-release.py <helm-release-name> <helm-release-namespace> <flux-git-repository-name> <flux-git-repository-namespace> <flux-kustomization-name> <flux-kustomization-namespace> <flux-git-repository-revision> [<helm-release-version>]")
+        sys.exit(1)
+
+    # Check whether the kubec config environment variable is set and load the config file
+    if "KUBECONFIG" in os.environ:
+        logger.info("Using kubeconfig file from KUBECONFIG environment variable: %s", os.environ["KUBECONFIG"])
+        config.load_kube_config(os.environ["KUBECONFIG"])
+    else:
+        logger.info("Using in-cluster configuration")
+        config.load_incluster_config()
+
+    log_green("Kubernetes config loaded successfully")
+
+    # Assign the arguments to variables
+    release_name = sys.argv[1]
+    namespace = sys.argv[2]
+    git_repository_name = sys.argv[3]
+    git_repository_namespace = sys.argv[4]
+    kustomization_name = sys.argv[5]
+    kustomization_namespace = sys.argv[6]
+    revision = sys.argv[7]
+    version = None
+    if len(sys.argv) > 8:
+        version = sys.argv[8]
+
+    client = client.CustomObjectsApi()
+    wait_for_flux_git_repository_kustomization_and_helm_release_to_be_updated(client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, release_name, namespace, revision, version)
+
