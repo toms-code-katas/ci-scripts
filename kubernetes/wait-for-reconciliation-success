@@ -113,18 +113,22 @@ def is_helm_release_reconciled(helm_release, version=None):
             upgrade_succeeded = True
 
     # Check if the version of the helm release matches the provided version
+    helm_release_version = helm_release["status"]["lastAppliedRevision"]
     if version:
-        helm_release_version = helm_release["status"]["lastAppliedRevision"]
         if helm_release_version != version:
+            log_yellow(f"The helm release {helm_release['metadata']['name']} has not been reconciled yet. Version: {helm_release_version} (expected: {version})")
             return False
+        else:
+            log_green(f"Version {version} of the helm release {helm_release['metadata']['name']} has been reconciled")
+            return True
 
     # Check if the conditions contain a "ReconciliationSucceeded" and a "UpgradeSucceeded" reason
     if reconciliation_succeeded and upgrade_succeeded:
-        log_green(f"Version {version} of the helm release {helm_release['metadata']['name']} has been reconciled")
+        log_green(f"Version {helm_release_version} of the helm release {helm_release['metadata']['name']} is ready")
         return True
     else:
         status = json.dumps(helm_release["status"], indent=4, sort_keys=True)
-        log_yellow(f"The helm release {helm_release['metadata']['name']} has not been reconciled yet. Status: {status}")
+        log_yellow(f"The helm release {helm_release['metadata']['name']} has not ready. Status: {status}")
         return False
 
 # This method loops until the helm release is reconciled. The loop continues for 2 minutes and then exits with an error
@@ -143,7 +147,7 @@ def wait_for_helm_release_to_be_reconciled(kubernetes_client, helm_release_name,
         # Check if the loop has been running for more than 2 minutes
         if (datetime.now() - start_time).seconds > 120:
             log_red(f"The helm release {helm_release_name} in namespace {namespace} was not reconciled in time")
-        return False
+            return False
 
         # Wait 5 seconds before checking again
         time.sleep(5)
@@ -189,11 +193,9 @@ def wait_for_flux_git_repository_and_kustomization_to_be_updated(kubernetes_clie
 # to match a specific revision. This means that both the flux git repository and the flux kustomization have been updated.
 # Then it waits for the helm release to be reconciled.
 def wait_for_flux_git_repository_kustomization_and_helm_release_to_be_updated(kubernetes_client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, helm_release_name, helm_release_namespace, revision, version=None):
-    # Wait for the flux git repository and kustomization to be updated
-    if not wait_for_flux_git_repository_and_kustomization_to_be_updated(kubernetes_client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, revision):
+    if not version and not wait_for_flux_git_repository_and_kustomization_to_be_updated(kubernetes_client, git_repository_name, git_repository_namespace, kustomization_name, kustomization_namespace, revision):
         return False
 
-    # Wait for the helm release to be reconciled
     if not wait_for_helm_release_to_be_reconciled(kubernetes_client, helm_release_name, helm_release_namespace, version):
         return False
 
