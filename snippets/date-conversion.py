@@ -6,4 +6,11 @@ if __name__ == '__main__':
     print(date.isoformat(sep="T", timespec='milliseconds'))
     # Format in mongo db: 2022-08-31T13:20:37.529Z
 
-    datetime.fromisoformat("2022-08-31T13:22:21.136+00:00")
+    print(date.utcnow())
+
+    print(date.strptime("2022-10-04T13:45:37", "%Y-%m-%dT%H:%M:%S"))
+    # date.strptime("2022-10-04T13:45:37.028", "%Y-%m-%dT%H:%M:%S.sss")
+    print(date.strptime("2022-10-04T13:45:37.028Z", "%Y-%m-%dT%H:%M:%S.%fZ"))
+    # date.fromisoformat("2022-08-31T13:22:21.136+00:00")
+    # date.fromisoformat('2022-10-04T13:45:37.028Z')
+

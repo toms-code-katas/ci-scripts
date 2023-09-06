@@ -81,7 +81,12 @@ spec:
 {{- if eq $nwp_type "egress" }}
   egress:
 {{- range $nwp_block := $nwp_blocks }}
-{{- include "render-network-policy.render-block" (dict "nwp_block" $nwp_block "root" $root) -}}
+{{- include "render-network-policy.render-block" (dict "nwp_block" $nwp_block "root" $root "nwp_type" "to") -}}
+{{- end }}
+{{- else if eq $nwp_type "ingress" }}
+  ingress:
+{{- range $nwp_block := $nwp_blocks }}
+{{- include "render-network-policy.render-block" (dict "nwp_block" $nwp_block "root" $root "nwp_type" "from") -}}
 {{- end }}
 {{ end }}
 {{ end }}
@@ -90,10 +95,11 @@ spec:
 
 {{ define "render-network-policy.render-block" -}}
 {{ $root := .root }}
+{{ $nwp_type := .nwp_type }}
 {{- if hasKey .nwp_block "ipBlocks" -}}
 {{- range $ipBlock := get .nwp_block "ipBlocks" }}
-  - to:
-      - ipBlock:
+{{ printf "- %s:" $nwp_type | indent 2 }}
+        - ipBlock:
           cidr: {{ get $ipBlock "cidr" }}
     ports:
       - port: {{ get $ipBlock "port" }}
@@ -102,13 +108,13 @@ spec:
 {{- end }}
 {{- if hasKey .nwp_block "services" }}
 {{- range $service := get .nwp_block "services" }}
-  - to:
+{{ printf "- %s:" $nwp_type | indent 2 }}
 {{- include (printf "%s" $service ) (dict "root" $root) | nindent 4 -}}
 {{- end }}
 {{- end }}
 {{- if hasKey .nwp_block "pods" -}}
 {{- range $pod := get .nwp_block "pods" }}
-  - to:
+{{ printf "- %s:" $nwp_type | indent 2 }}
     - podSelector:
         matchLabels:
           app.kubernetes.io/name: {{ get $pod "name" }}
@@ -119,7 +125,7 @@ spec:
 {{- end }}
 {{- if hasKey .nwp_block "extras" }}
 {{- range $extra := get .nwp_block "extras" }}
-  - to:
+{{ printf "- %s:" $nwp_type | indent 2 }}
 {{- range $index, $yaml_line := regexSplit "\n" (toYaml $extra) -1 }}
 {{- if eq $index 0 }}
 {{- else }}

@@ -1,0 +1,17 @@
+# This gitlab ci runs the script wait-for-reconciliation-success.py in a python container
+
+stages:
+  - test
+
+test:
+    stage: test
+    image: wait-for-reconciliation-success
+    entrypoint: [""]
+    script:
+        - python wait-for-reconciliation-success my-helm-release my-namespace 1.0.0
+    rules:
+      - if: $CI_PIPELINE_SOURCE == "web"
+        when: always
+      - when: never
+    tags:
+      - kubernetes

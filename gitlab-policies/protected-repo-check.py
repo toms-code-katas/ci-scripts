@@ -4,9 +4,8 @@ import gitlab
 # - if a gitlab repo contains a protected branch
 # - if that branch is protected against force pushes
 # - if that branch needs code owner approval
-# - if that branch can only be merged members of the project with at least developer access
-# - of if no roles are specified, that the members of the project which may merge the branch
-#   have at least maintainer access
+# - if that branch can only be merged members of the project with a specific role
+# - if that branch can only be pushed to by members of the project with a specific role
 
 
 def get_gitlab_project_by_path(path, gitlab_instance):

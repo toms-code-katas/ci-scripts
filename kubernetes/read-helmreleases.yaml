@@ -1,0 +1,31 @@
+# Definition of a role in the namespace "test" which allows to read HelmReleases
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: read-helmreleases
+  namespace: test
+rules:
+- apiGroups:
+  - helm.toolkit.fluxcd.io
+  resources:
+  - helmreleases
+  verbs:
+  - get
+  - list
+  - watch
+
+---
+# Definition of a role binding which binds the role "read-helmreleases" to the service account "tester" which is in the namespace "tester"
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: read-helmreleases
+  namespace: test
+roleRef:
+    apiGroup: rbac.authorization.k8s.io
+    kind: Role
+    name: read-helmreleases
+subjects:
+- kind: ServiceAccount
+  name: tester
+  namespace: test

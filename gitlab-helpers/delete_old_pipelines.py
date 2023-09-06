@@ -15,7 +15,7 @@ def parse_args():
     parser.add_argument('--project', required=True, help='The project ID or path of the project')
     parser.add_argument('--keep-time', default='365d', help='The time for which the pipelines are kept')
     parser.add_argument('--dry-run', action='store_true', help='Do not delete anything, just print what would be deleted')
-    parser.add_argument('--url', required=True, default='https://gitlab.devops.telekom.de', help='The url of the GitLab instance')
+    parser.add_argument('--url', required=True, default='https://gitlab.com', help='The url of the GitLab instance')
     parser.add_argument('--token', required=True, help='The GitLab API token')
 
     return parser.parse_args()
