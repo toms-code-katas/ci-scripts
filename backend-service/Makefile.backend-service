@@ -1,0 +1,33 @@
+RPM_NAME = backend-service
+
+# Version of the package
+VERSION = $(CI_COMMIT_TAG)
+
+# Release number
+RELEASE = 1
+
+# Architecture for the RPM package
+ARCH = noarch
+
+# RPM build directory
+BUILD_DIR = ./rpmbuild
+
+# RPM spec file name and path
+SPEC_FILE = $(CURDIR)/etc/$(RPM_NAME).spec
+
+# Target: Build the RPM package
+rpm: clean
+	@echo "Building RPM..."
+	mkdir -p $(BUILD_DIR)/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+	touch $(BUILD_DIR)/SOURCES/empty-file
+	tar czf $(BUILD_DIR)/SOURCES/$(RPM_NAME)-$(VERSION).tar.gz -C $(BUILD_DIR)/SOURCES empty-file
+	rpmbuild -ba --define "_topdir $(BUILD_DIR)" --define "version $(VERSION)" --define "release $(RELEASE)" --define "arch $(ARCH)" $(SPEC_FILE)
+	@echo "RPM Build complete."
+
+# Target: Clean up temporary files
+clean:
+	@echo "Cleaning up..."
+	rm -rf $(BUILD_DIR)
+	@echo "Cleanup complete."
+
+.PHONY: rpm clean
