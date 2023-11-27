@@ -1,0 +1,27 @@
+ARG IMAGE_PREFIX=""
+FROM ${IMAGE_PREFIX}alpine:latest
+
+ARG NAME=backend-service
+ARG INSTALL_DIR=/appl/tmo/$NAME
+
+ARG USER_ADD=frontend
+ARG GROUP_ADD=frontend
+
+ARG USER_UID=10000
+ARG GROUP_GID=10000
+
+COPY build/bin/* $INSTALL_DIR/bin/
+
+RUN addgroup $GROUP_ADD -g $GROUP_GID \
+ && adduser -u $USER_UID -G $GROUP_ADD -D -s /sbin/nologin $USER_ADD \
+ && chown -R $USER_ADD:$GROUP_ADD $INSTALL_DIR \
+ && chmod -R 750 $INSTALL_DIR \
+ && chmod 550 $INSTALL_DIR/bin/*
+
+USER $USER_ADD:$GROUP_ADD
+WORKDIR $INSTALL_DIR
+
+ENV NAME=$NAME
+ENV INSTALL_DIR=$INSTALL_DIR
+
+ENTRYPOINT $INSTALL_DIR/bin/$NAME.sh

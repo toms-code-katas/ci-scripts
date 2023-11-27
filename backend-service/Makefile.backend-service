@@ -10,7 +10,7 @@ RELEASE = 1
 ARCH = noarch
 
 # RPM build directory
-BUILD_DIR = ./rpmbuild
+BUILD_DIR = ./build
 
 # RPM spec file name and path
 SPEC_FILE = $(CURDIR)/etc/$(RPM_NAME).spec
@@ -18,8 +18,9 @@ SPEC_FILE = $(CURDIR)/etc/$(RPM_NAME).spec
 # Target: Build the RPM package
 rpm: clean
 	@echo "Building RPM..."
-	mkdir -p $(BUILD_DIR)/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS}
+	mkdir -p $(BUILD_DIR)/{BUILD,BUILDROOT,RPMS,SOURCES,SPECS,SRPMS,bin}
 	touch $(BUILD_DIR)/SOURCES/empty-file
+	echo "while true; do echo 'Hello from $(RPM_NAME)'; sleep 2; done" > $(BUILD_DIR)/bin/$(RPM_NAME).sh
 	tar czf $(BUILD_DIR)/SOURCES/$(RPM_NAME)-$(VERSION).tar.gz -C $(BUILD_DIR)/SOURCES empty-file
 	rpmbuild -ba --define "_topdir $(BUILD_DIR)" --define "version $(VERSION)" --define "release $(RELEASE)" --define "arch $(ARCH)" $(SPEC_FILE)
 	@echo "RPM Build complete."
@@ -31,3 +32,6 @@ clean:
 	@echo "Cleanup complete."
 
 .PHONY: rpm clean
+
+.PHONY: check
+check: clean rpm
